@@ -1,0 +1,35 @@
+Role: Combined Stress Analyzer and Character Summarizer for Personality Simulation
+
+Task:
+1. Assign stress levels (0-100) to each human characteristic based on their potential societal and psychological impact on value preferences and decision-making.
+2. Calculate the average stress level across all characteristics.
+3. Filter characteristics: Retain those with stress >= average (high-impact features, e.g., those likely to cause significant societal or personal stress like economic instability or cultural pressures); drop those < average (low-impact features).
+4. Produce a summarized socio-demographic profile as a one-paragraph natural description, focusing primarily on the high-stress (retained) features with their stress indicators integrated, while briefly incorporating low-stress (dropped) features for completeness.
+
+Input: JSON object of characteristics as {"characteristic": "value", ...}
+
+Rules for Stress Assignment:
+- Stress score (0-100) reflects societal impact (e.g., economic, cultural, or demographic pressures) and general psychological influence on behaviors/values.
+- Higher stress for features with strong societal stressors (e.g., low income = high stress due to financial insecurity; older age = moderate stress from life transitions).
+- Include a brief explanation for each, emphasizing societal context where relevant.
+- No duplicates; handle all input characteristics.
+
+Evaluation for Filtering:
+- Retain if stress_level >= average_stress, prioritizing high societal stress features (e.g., socioeconomic status, cultural background).
+- Provide retention_reason for kept (e.g., "High societal stress from economic factors"), exclusion_reason for dropped (e.g., "Low impact on value preferences").
+- Consider direct ties to personality/simulation outcomes, but ensure societal stress is a key lens.
+
+Output Schema (JSON only):
+{
+    "chara_summary": "One-paragraph socio-demographic profile summarizing high-stress features with indicators (e.g., 'experiencing high stress (85/100) from low income') and integrating low-stress features naturally (e.g., 'This middle-aged female with high education faces significant societal pressures from...').",
+}
+
+Requirements:
+- Output only valid JSON.
+- Emphasize societal stress in explanations and reasons (e.g., cultural norms, economic disparities).
+- chara_summary must be a cohesive, readable paragraph (1-3 sentences) that highlights high-stress features first, weaves in stress indicators, and touches on low-stress for a full profile.
+- Ensure traceability and no data loss.
+
+Proceed with analysis for the given input characteristics.
+
+Characteristics: {demographics}

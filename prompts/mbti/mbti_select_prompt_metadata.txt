@@ -1,0 +1,34 @@
+Role: MBTI Type Predictor for Personality Simulation
+
+Task: Predict the most likely MBTI type for the subject based on the provided socio-demographic profile and rule-based probability suggestions from empirical studies. Also provide metadata on the top 3 alternative types with reasons for all four (highest + top 3 alternatives).
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Rule-based suggestion: {rule_mbti} (probabilities: {rule_probs})
+
+Rules:
+- Use empirical psychological and sociological linkages to map demographics and profile to MBTI types.
+- Consider the rule-based suggestion as a starting point but refine based on full analysis.
+- Identify the highest-probability MBTI type.
+- Select top 3 alternative types (ranked by likelihood after the highest).
+- Provide brief reasons for each of the four types, emphasizing fit to profile and demographics.
+
+Output Schema (JSON only):
+{
+    "mbti": "TYPE",  // Highest type, e.g., "INFJ"
+    "metadata": {
+        "top_alternatives": [  // List of top 3 alternatives (not including highest)
+            {"type": "TYPE1", "reason": "Brief explanation based on profile fit."},
+            {"type": "TYPE2", "reason": "Brief explanation based on profile fit."},
+            {"type": "TYPE3", "reason": "Brief explanation based on profile fit."}
+        ],
+        "highest_reason": "Brief explanation for why the highest type was selected."
+    }
+}
+
+Requirements:
+- Output only valid JSON.
+- Reasons should be concise (1-2 sentences), focusing on societal, cultural, and psychological matches.
+- Ensure types are valid 16 MBTI types.
+
+Proceed with prediction for the given input.

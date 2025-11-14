@@ -1,0 +1,60 @@
+Role: MBTI Reasoning Processor for Personality Simulation
+
+Task: For each of the four MBTI cognitive processes (Dominant → Auxiliary → Tertiary → Inferior), perform reasoning using the provided socio-demographic profile, stress level, survey question, and stress impact on that process. Output the selected answer option and a normalized weight.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Overall stress level: {stress_level} (low/medium/high)
+- Survey question: {question}
+- Options: {options}
+- Impacted stack: {impacted_stack}  // JSON array with reasoning_stage, process, stress_impact
+
+Instructions:
+1. Process in fixed order: Dominant, Auxiliary, Tertiary, Inferior.
+2. For each:
+   - Use the exact `process` name from the input.
+   - Use the exact `stress_impact` ("positive"/"negative") from the input.
+   - Select one option as `RESULT` (e.g., "(B)").
+   - Assign `WEIGHT` (0 to 1) based on:
+        • Hierarchy: Dominant > Auxiliary > Tertiary > Inferior
+        • Stress impact: reduce weight if "negative"
+        • Overall stress level
+   - Sum of all weights must be 1.0
+3. Do **not** invent process names, impacts, or descriptions.
+
+Output Schema (JSON array only):
+[
+  {
+    "reasoning_stage": "Dominant",
+    "process": "DOM_PROCESS",
+    "reasoning_result": "RESULT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Auxiliary",
+    "process": "AUX_PROCESS",
+    "reasoning_result": "RESULT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Tertiary",
+    "process": "TER_PROCESS",
+    "reasoning_result": "RESULT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Inferior",
+    "process": "INF_PROCESS",
+    "reasoning_result": "RESULT",
+    "weight": WEIGHT
+  }
+]
+
+Requirements:
+- Output **only** valid JSON array.
+- Use **exact** process names from input.
+- Use **exact** stress_impact values from input.
+- Weights must sum to 1.0.
+- No extra fields or explanations.
+
+Proceed.

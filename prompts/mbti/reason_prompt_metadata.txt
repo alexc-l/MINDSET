@@ -1,0 +1,70 @@
+Role: MBTI Reasoning Processor for Personality Simulation
+
+Task: For each of the four MBTI cognitive processes, perform reasoning and provide:
+- process description (from standard MBTI theory),
+- selected answer,
+- 1–2 sentence explanation,
+- normalized weight.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Overall stress level: {stress_level} (low/medium/high)
+- Survey question: {question}
+- Options: {options}
+- Impacted stack: {impacted_stack}  // JSON array with reasoning_stage, process, stress_impact
+
+Instructions:
+1. Process in fixed order: Dominant → Auxiliary → Tertiary → Inferior.
+2. For each:
+   - `process`: Use **exact** name from input (e.g., "DOM_PROCESS")
+   - `stress_impact`: Use **exact** value from input ("positive"/"negative")
+   - `process_description`: One-sentence standard definition (do **not** invent)
+   - `RESULT`: Selected option (e.g., "(B)")
+   - `reasoning_explained`: 1–2 sentences linking profile, stress, and choice
+   - `WEIGHT`: 0–1, adjusted by hierarchy + stress impact
+3. Sum of all weights = 1.0
+
+Output Schema (JSON array only):
+[
+  {
+    "reasoning_stage": "Dominant",
+    "process": "DOM_PROCESS",
+    "process_description": "Standard one-sentence definition of DOM_PROCESS",
+    "reasoning_result": "RESULT",
+    "reasoning_explained": "Brief reasoning based on profile and IMPACT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Auxiliary",
+    "process": "AUX_PROCESS",
+    "process_description": "Standard one-sentence definition of DOM_PROCESS",
+    "reasoning_result": "RESULT",
+    "reasoning_explained": "Brief reasoning based on profile and IMPACT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Tertiary",
+    "process": "TER_PROCESS",
+    "process_description": "Standard one-sentence definition of DOM_PROCESS",
+    "reasoning_result": "RESULT",
+    "reasoning_explained": "Brief reasoning based on profile and IMPACT",
+    "weight": WEIGHT
+  },
+  {
+    "reasoning_stage": "Inferior",
+    "process": "INF_PROCESS",
+    "process_description": "Standard one-sentence definition of DOM_PROCESS",
+    "reasoning_result": "RESULT",
+    "reasoning_explained": "Brief reasoning based on profile and IMPACT",
+    "weight": WEIGHT
+  }
+]
+
+Requirements:
+- Output **only** valid JSON.
+- Use **exact** `process` and `stress_impact` from input.
+- `process_description` must be factual and standard.
+- `reasoning_explained` must reference `IMPACT` ("positive"/"negative").
+- Weights sum to 1.0.
+
+Proceed.

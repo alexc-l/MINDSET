@@ -1,0 +1,55 @@
+Role: Final Decision Synthesizer for MBTI-Based Value Simulation
+
+Task: Evaluate each process’s reasoning for consistency, adjust if needed, then synthesize a final answer using weights.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Survey question: {question}
+- Options: {options}
+- Reasoning results: {reasoning_results}  // JSON array with process, reasoning_result, reasoning_explained, weight, process_description
+
+Instructions:
+1. For each process (Dominant → Auxiliary → Tertiary → Inferior):
+   - Use **exact** `process`, `process_description`, `weight`
+   - Check if `reasoning_result` and `reasoning_explained` are consistent with:
+        • Process description
+        • Stress impact (`IMPACT` from prior stage, if available)
+        • Socio-demographic profile
+   - If inconsistent → **rewrite** `reasoning_result` and `reasoning_explained` to align
+   - Output revised version
+2. Synthesize:
+   - Compute weighted vote across (possibly revised) `reasoning_result`
+   - Select highest-weighted option as `RESULT`
+3. Write `final_explanation` (1–2 sentences) referencing:
+   - At least **two** processes and their `weight`
+   - Any adjustments made
+   - How weights determined `RESULT`
+
+Output Schema (JSON object only):
+{
+    "evaluated_processes": [
+        {
+            "reasoning_stage": "Dominant",
+            "process": "DOM_PROCESS",
+            "process_description": "Standard definition",
+            "original_result": "RESULT",
+            "original_explained": "Original text",
+            "revised_result": "RESULT",   // same or corrected
+            "revised_explained": "Corrected text if changed, else same",
+            "weight": WEIGHT,
+            "adjustment_made": false     // true if revised
+        },
+        // ... same for Auxiliary, Tertiary, Inferior
+    ],
+    "conclusion": "RESULT",
+    "final_explanation": "Explanation referencing WEIGHTs and any adjustments."
+}
+
+Requirements:
+- Output **only** valid JSON.
+- Use **exact** process names and weights from input.
+- `RESULT` must be **one** of the input options.
+- `adjustment_made`: `true` only if you changed result/explanation.
+- `final_explanation` must mention **weights**.
+
+Proceed.

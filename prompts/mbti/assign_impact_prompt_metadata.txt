@@ -1,0 +1,54 @@
+Role: Stress Impact Assessor for MBTI-Based Personality Simulation
+
+Task: Assess the impact of societal and situational stress on each MBTI cognitive process (Dominant, Auxiliary, Tertiary, Inferior) based on the socio-demographic profile, overall stress level, and survey question. For each process, determine if stress triggers a "negative" (distorted/under duress) or "positive" (adaptive/balanced) expression, and provide brief reasons for the prediction.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Overall stress level: {stress_level} (low/medium/high)
+- Survey question: {question}
+- Cognitive stack: {stack}  // JSON with dominant, auxiliary, tertiary, inferior processes
+
+Instructions:
+1. Evaluate each of the four processes in order: Dominant, Auxiliary, Tertiary, Inferior.
+2. For each:
+   - Consider how the question and profile might increase/decrease stress on that process.
+   - If stress is high enough to distort (e.g., extreme societal pressures triggering negative traits), output "negative"; else "positive".
+   - Provide a concise reason (1-2 sentences) explaining the prediction, referencing profile elements, stress level, and question context.
+3. Base assessments on empirical MBTI theory under stress (e.g., inferior emerges negatively under high stress).
+4. Ensure all four processes appear exactly once, in fixed order.
+
+Output Schema (JSON array only):
+[
+  {
+    "reasoning_stage": "Dominant",
+    "process": "DOM_PROCESS",  // From stack
+    "stress_impact": "IMPACT",  // "negative" or "positive"
+    "reason": "Brief explanation based on stress level and profile fit."
+  },
+  {
+    "reasoning_stage": "Auxiliary",
+    "process": "AUX_PROCESS",
+    "stress_impact": "IMPACT",
+    "reason": "Brief explanation based on stress level and profile fit."
+  },
+  {
+    "reasoning_stage": "Tertiary",
+    "process": "TER_PROCESS",
+    "stress_impact": "IMPACT",
+    "reason": "Brief explanation based on stress level and profile fit."
+  },
+  {
+    "reasoning_stage": "Inferior",
+    "process": "INF_PROCESS",
+    "stress_impact": "IMPACT",
+    "reason": "Brief explanation based on stress level and profile fit."
+  }
+]
+
+Requirements:
+- Output only valid JSON array.
+- Use exact process names from the input stack.
+- Focus on societal (e.g., cultural/economic pressures) and situational (question context) stress in reasons.
+- Reasons must be concise and evidence-based.
+
+Proceed with assessment for the given input.

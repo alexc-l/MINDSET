@@ -1,0 +1,25 @@
+# Core data handling
+pandas>=2.0
+openpyxl>=3.1          # Excel I/O (pd.read_excel)
+
+# Logging & CLI
+loguru>=0.7            # nicer logs than the built-in logging
+tqdm>=4.66             # progress bars (optional but recommended)
+
+# LLM client (replace with your actual provider)
+openai>=1.30           # OpenAI API
+anthropic>=0.28        # Anthropic (Claude) – optional
+google-generativeai>=0.8  # Gemini – optional
+
+# Prompt loading (your utils.load_prompt)
+jinja2>=3.1            # if you use .jinja2 templates
+pyyaml>=6.0            # if prompts are in YAML
+
+# Optional – for debugging / caching
+xxhash>=3.4            # faster hashing than hashlib (optional)
+diskcache>=5.6         # persistent cache for stage responses
+
+# Development / testing
+pytest>=8.0
+black>=24.0
+ruff>=0.5              # linter / formatter

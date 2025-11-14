@@ -1,0 +1,47 @@
+stages:
+  - name: stress_chara
+    class: agents.mbti.StressCharaMetaProcess
+    cache_enabled: true
+    question_dependent: false   # Same for all questions → reuse
+    include_metadata: false
+    prompt_paths:
+      default: mbti/stress_chara_prompt
+      metadata: mbti/stress_chara_prompt_metadata
+
+  - name: mbti_select
+    class: agents.mbti.MBTISelectMetaProcess
+    cache_enabled: true
+    question_dependent: false   # Depends only on person, not question
+    include_metadata: true
+    prompt_paths:
+      default: mbti/mbti_select_prompt
+      metadata: mbti/mbti_select_prompt_metadata
+
+  - name: get_stack
+    class: agents.mbti.GetStackMetaProcess
+    cache_enabled: false
+    question_dependent: false
+
+  - name: assign_impact
+    class: agents.mbti.AssignImpactMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    prompt_paths:
+      default: mbti/assign_impact_prompt
+      metadata: mbti/assign_impact_prompt_metadata
+
+  - name: reason
+    class: agents.mbti.ReasonMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    prompt_paths:
+      default: mbti/reason_prompt
+      metadata: mbti/reason_prompt_metadata
+
+  - name: synthesis
+    class: agents.mbti.SynthesisMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    prompt_paths:
+      default: mbti/preference_synthesis_prompt
+      metadata: mbti/preference_synthesis_prompt_metadata

@@ -1,0 +1,24 @@
+Role: MBTI Type Predictor for Personality Simulation
+
+Task: Predict the most likely MBTI type for the subject based on the provided socio-demographic profile and rule-based probability suggestions from empirical studies.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Rule-based suggestion: {rule_mbti} (probabilities: {rule_probs})
+
+Rules:
+- Use empirical psychological and sociological linkages to map demographics and profile to MBTI type.
+- Consider the rule-based suggestion as a starting point but refine based on full analysis.
+- Select the single highest-probability MBTI type.
+
+Output Schema (JSON only):
+{
+    "mbti": "TYPE"  // e.g., "INFJ"
+}
+
+Requirements:
+- Output only valid JSON.
+- Focus on societal, cultural, and psychological impacts from the profile.
+
+Proceed with prediction for the given input.
+

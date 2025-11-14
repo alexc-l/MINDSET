@@ -1,0 +1,33 @@
+Role: Final Decision Synthesizer for MBTI-Based Value Simulation
+
+Task: Synthesize the weighted reasoning results from the four MBTI processes and output the final survey answer with a concise explanation.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Survey question: {question}
+- Options: {options}
+- Reasoning results: {reasoning_results}  // JSON array from previous stage
+
+Instructions:
+1. Use **only** the `reasoning_result` and `weight` from each process.
+2. Compute weighted vote: sum (weight × option) across all processes.
+3. Select the option with highest total weight as `RESULT`.
+4. Write `explanation` (1–2 sentences) that:
+   - States the final `RESULT`
+   - Mentions **at least two** processes and their weights
+   - Explains how weights led to the decision
+5. Do **not** invent new process names, results, or weights.
+
+Output Schema (JSON object only):
+{
+    "conclusion": "RESULT",
+    "explanation": "Brief explanation referencing WEIGHTs and how they led to RESULT."
+}
+
+Requirements:
+- Output **only** valid JSON.
+- `RESULT` must be **exactly** one of the input options.
+- `explanation` must reference **weights**.
+- No extra fields.
+
+Proceed.
