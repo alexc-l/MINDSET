@@ -18,6 +18,7 @@ class ConfigurableMetaProcess(MetaProcess):
         self.prompt_paths = stage_config.get("prompt_paths", {})
         self.cache_enabled = stage_config.get("cache_enabled", True)
         self.question_dependent = stage_config.get("question_dependent", True)
+        self.global_constraint_config = stage_config.get("constraint_config", {})
 
     def _get_cache_key(self, question: str, options: str, personality_profile: Dict, constraints: Dict, include_metadata: bool, **extra) -> str:
         """Build deterministic cache key."""
@@ -36,7 +37,6 @@ class ConfigurableMetaProcess(MetaProcess):
 
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
                 constraints: Dict[str, Any], include_metadata: bool = None, **extra) -> str:
-
         include_metadata = include_metadata if include_metadata is not None else self.include_metadata_default
         cache_dir = extra.get("cache_dir", "cache")
         interview_id = extra.get("interview_id", "unknown")
@@ -79,8 +79,16 @@ class ConfigurableMetaProcess(MetaProcess):
 
         # Inject prompt path
         prompt_path = self.prompt_paths.get("metadata" if include_metadata else "default")
+        snippet_paths = self.prompt_paths.get("snippet_paths", None)
         if prompt_path:
-            extra = {**extra, "prompt_path": prompt_path}
+            if snippet_paths is not None:
+                extra = {**extra, "prompt_path": prompt_path,
+                         "snippet_paths": self.prompt_paths.get("snippet_paths"),
+                         "global_constraint_config": self.global_constraint_config
+                }
+            else:
+                extra = {**extra, "prompt_path": prompt_path}
+
 
         # === LOG: Running Real Stage ===
         log.debug(f"[STAGE {self.name}] → Executing {actual_class.__name__}")

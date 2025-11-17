@@ -1,0 +1,1 @@
+- SES level (low/medium/high): Social identity—encompassing socioeconomic status (SES), family roles, cultural norms, and group affiliations. Infer from factors like income, education, occupation, family size, and location.

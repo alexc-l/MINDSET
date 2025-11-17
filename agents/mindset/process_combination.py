@@ -56,6 +56,9 @@ class ProcessCombination(ABC):
         with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
 
+        # === EXTRACT GLOBAL CONSTRAINT CONFIG ===
+        global_constraint_config = config.get("constraint_config", {})
+
         stages_config = config.get("stages", [])
         if not stages_config:
             raise ValueError("No stages defined in config")
@@ -96,6 +99,7 @@ class ProcessCombination(ABC):
                 "cache_enabled": cfg.get("cache_enabled", True),
                 "question_dependent": cfg.get("question_dependent", True),
                 "cache_dir": cache_dir,
+                "constraint_config": global_constraint_config
             }
 
             # Wrap with ConfigurableMetaProcess

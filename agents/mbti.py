@@ -17,21 +17,6 @@ from .llm_helper._llm_stub import llm_call  # For convenience
 log = logging.getLogger(__name__)
 
 
-class StressCharaMetaProcess(MetaProcess):
-    """MARK 1+2: Generates socio-demographic profile with stress (no MBTI)."""
-    def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
-        demographics = extra.get('demographics')
-        prompt_path = extra.get('prompt_path')  # Injected
-
-        assert demographics is not None and prompt_path is not None, f"demographics and prompt path is None!"
-
-        prompt = (load_prompt(prompt_path)
-            .replace("{demographics}", json.dumps(demographics, ensure_ascii=False))
-        )
-
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
-
 class MBTISelectMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
                 constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> str:

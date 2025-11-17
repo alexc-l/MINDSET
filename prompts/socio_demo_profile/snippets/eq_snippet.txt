@@ -1,0 +1,1 @@
+- EQ level (low/medium/high): Emotional Intelligence. Infer from factors like age, gender, education, social roles, and stress.

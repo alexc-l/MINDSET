@@ -1,0 +1,1 @@
+   - IQ ({iq_level}): Apply strict logical analysis and cost-benefit reasoning. Enhances analytical, logical processing; reduces errors in complex tasks.

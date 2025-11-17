@@ -1,12 +1,21 @@
+constraint_config:
+  use_eq: true
+  use_iq: false
+  use_ses: true
+
 stages:
   - name: stress_chara
-    class: agents.mbti.StressCharaMetaProcess
+    class: agents.mindset.socio_demo_generator.StressCharaMetaProcess
     cache_enabled: true
     question_dependent: false   # Same for all questions → reuse
     include_metadata: false
     prompt_paths:
-      default: mbti/stress_chara_prompt
-      metadata: mbti/stress_chara_prompt_metadata
+      default: socio_demo_profile/stress_chara_prompt
+      metadata: socio_demo_profile/stress_chara_prompt_metadata
+      snippet_paths:
+        eq: socio_demo_profile/snippets/eq_snippet
+        iq: socio_demo_profile/snippets/iq_snippet
+        ses: socio_demo_profile/snippets/ses_snippet
 
   - name: mbti_select
     class: agents.mbti.MBTISelectMetaProcess
@@ -26,6 +35,7 @@ stages:
     class: agents.mbti.AssignImpactMetaProcess
     cache_enabled: true
     question_dependent: true
+    include_metadata: false
     prompt_paths:
       default: mbti/assign_impact_prompt
       metadata: mbti/assign_impact_prompt_metadata
@@ -34,6 +44,7 @@ stages:
     class: agents.mbti.ReasonMetaProcess
     cache_enabled: true
     question_dependent: true
+    include_metadata: false
     prompt_paths:
       default: mbti/reason_prompt
       metadata: mbti/reason_prompt_metadata
@@ -42,6 +53,20 @@ stages:
     class: agents.mbti.SynthesisMetaProcess
     cache_enabled: true
     question_dependent: true
+    include_metadata: false
     prompt_paths:
       default: mbti/preference_synthesis_prompt
       metadata: mbti/preference_synthesis_prompt_metadata
+
+  - name: apply_constraints
+    class: agents.mindset.constraints.ConstraintMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    include_metadata: false
+    prompt_paths:
+      default: constraints/unified_constraint_prompt
+      metadata: constraints/unified_constraint_prompt_metadata
+      snippet_paths:
+        eq: constraints/snippets/eq_snippet
+        iq: constraints/snippets/iq_snippet
+        ses: constraints/snippets/ses_snippet

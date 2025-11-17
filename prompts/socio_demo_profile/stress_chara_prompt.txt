@@ -5,23 +5,25 @@ Task:
 2. Calculate the average stress level across all characteristics.
 3. Filter characteristics: Retain those with stress >= average (high-impact features, e.g., those likely to cause significant societal or personal stress like economic instability or cultural pressures); drop those < average (low-impact features).
 4. Produce a summarized socio-demographic profile as a one-paragraph natural description, focusing primarily on the high-stress (retained) features with their stress indicators integrated, while briefly incorporating low-stress (dropped) features for completeness.
+5. Include the following active inferences (if any):
+{active_snippets}
 
-Input: JSON object of characteristics as {"characteristic": "value", ...}
+Input: JSON object of characteristics as {demographics}
 
 Rules for Stress Assignment:
 - Stress score (0-100) reflects societal impact (e.g., economic, cultural, or demographic pressures) and general psychological influence on behaviors/values.
 - Higher stress for features with strong societal stressors (e.g., low income = high stress due to financial insecurity; older age = moderate stress from life transitions).
-- Include a brief explanation for each, emphasizing societal context where relevant.
 - No duplicates; handle all input characteristics.
 
 Evaluation for Filtering:
 - Retain if stress_level >= average_stress, prioritizing high societal stress features (e.g., socioeconomic status, cultural background).
-- Provide retention_reason for kept (e.g., "High societal stress from economic factors"), exclusion_reason for dropped (e.g., "Low impact on value preferences").
 - Consider direct ties to personality/simulation outcomes, but ensure societal stress is a key lens.
 
 Output Schema (JSON only):
 {
+    "stress_level": "low/medium/high",  // Overall category: <33 low, 33-66 medium, >66 high based on average
     "chara_summary": "One-paragraph socio-demographic profile summarizing high-stress features with indicators (e.g., 'experiencing high stress (85/100) from low income') and integrating low-stress features naturally (e.g., 'This middle-aged female with high education faces significant societal pressures from...').",
+    // Dynamically add fields like "eq_level", "iq_level", "ses_level" based on active snippets
 }
 
 Requirements:
@@ -31,5 +33,3 @@ Requirements:
 - Ensure traceability and no data loss.
 
 Proceed with analysis for the given input characteristics.
-
-Characteristics: {demographics}

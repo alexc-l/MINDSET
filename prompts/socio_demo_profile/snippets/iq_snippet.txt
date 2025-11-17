@@ -1,0 +1,1 @@
+- IQ level (low/medium/high): Cognitive Intelligence. Infer from factors like education, occupation, income, and cognitive demands in profile.
