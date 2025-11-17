@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 
 import yaml
 
-from .contants import PROCESS_DESC_LOOKUP
+from .constants import PROCESS_DESC_LOOKUP
 from .mindset.meta_process import MetaProcess
 from .mindset.personality_theory import PersonalityTheory
 from .mindset.process_combination import ProcessCombination
