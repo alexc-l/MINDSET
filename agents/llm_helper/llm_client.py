@@ -1,5 +1,6 @@
 import os
 from typing import List, Dict, Any
+import requests
 
 try:
     from openai import OpenAI
@@ -26,6 +27,10 @@ try:
     from lmdeploy import pipeline, ChatTemplateConfig
 except ImportError:
     lmdeploy = None
+
+log = logging.getLogger(__name__)
+
+import logging
 
 class LLMClient:
     """
@@ -71,15 +76,25 @@ class LLMClient:
         elif self.provider == 'lmdeploy':
             if lmdeploy is None:
                 raise ImportError("Install lmdeploy: pip install lmdeploy")
-            # Setup pipeline for inference; supports acceleration via turbomind/vllm
-            chat_config = ChatTemplateConfig(model_name=self.model) if 'chat_template' in kwargs else None
-            self.client = pipeline(
-                self.model,  # Can be local path or HF repo
-                backend=kwargs.get('backend', 'turbomind'),  # For acceleration
-                tp=kwargs.get('tp', 1),  # Tensor parallelism
-                model_format=kwargs.get('model_format', 'hf'),
-                chat_template_config=chat_config
-            )
+            if self.base_url:
+                # Server mode: Use HTTP client
+                self._is_server = True
+                self.session = requests.Session()
+                if self.api_key:
+                    self.session.headers.update({"Authorization": f"Bearer {self.api_key}"})
+                log.info(f"LMDeploy server client initialized at {self.base_url}")
+            else:
+                # Local mode: Use pipeline
+                self._is_server = False
+                chat_config = ChatTemplateConfig(model_name=self.model) if 'chat_template' in kwargs else None
+                self.client = pipeline(
+                    self.model,
+                    backend=kwargs.get('backend', 'turbomind'),
+                    tp=kwargs.get('tp', 1),
+                    model_format=kwargs.get('model_format', 'hf'),
+                    chat_template_config=chat_config
+                )
+            log.info("LMDeploy local pipeline initialized")
 
         else:
             raise ValueError(f"Unsupported provider: {provider}")
@@ -134,9 +149,23 @@ class LLMClient:
             return resp.choices[0].message.content
 
         elif self.provider == 'lmdeploy':
-            # LMDeploy pipeline handles messages directly
-            responses = self.client.chat(messages, temperature=temperature, max_new_tokens=max_tokens, **extra)
-            return responses[0].response.text  # Assume first response
+            if self._is_server:
+                # Server: OpenAI-compatible HTTP
+                payload = {
+                    "model": self.model,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                    **extra
+                }
+                resp = self.session.post(f"{self.base_url}/chat/completions", json=payload)
+                resp.raise_for_status()
+                data = resp.json()
+                return data["choices"][0]["message"]["content"]
+            else:
+                # Local: Pipeline
+                responses = self.client.chat(messages, temperature=temperature, max_new_tokens=max_tokens, **extra)
+                return responses[0].response.text
 
         raise NotImplementedError(f"Chat completion not implemented for {self.provider}")
 
@@ -149,10 +178,23 @@ class LLMClient:
     ) -> List[str]:
         """Batch reasoning for efficiency, especially with LMDeploy."""
         if self.provider == 'lmdeploy':
-            # LMDeploy supports batch natively
-            responses = self.client.batch_chat(batch_messages, temperature=temperature, max_new_tokens=max_tokens, **extra)
-            return [r.response.text for r in responses]
-
+            if self._is_server:
+                # Server: Batch via single request (OpenAI format: list of messages arrays)
+                payload = {
+                    "model": self.model,
+                    "messages": batch_messages,  # Array of message arrays
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                    **extra
+                }
+                resp = self.session.post(f"{self.base_url}/chat/completions", json=payload)
+                resp.raise_for_status()
+                data = resp.json()
+                return [choice["message"]["content"] for choice in data["choices"]]
+            else:
+                # Local: Pipeline batch
+                responses = self.client.batch_chat(batch_messages, temperature=temperature, max_new_tokens=max_tokens, **extra)
+                return [r.response.text for r in responses]
         else:
-            # Fallback: Sequential for closed-source (can be async-ified later)
+            # Fallback sequential
             return [self.chat_completion(msgs, temperature, max_tokens, **extra) for msgs in batch_messages]
