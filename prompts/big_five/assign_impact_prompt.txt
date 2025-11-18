@@ -1,0 +1,45 @@
+Task: Assess the impact of societal and situational stress on each Big Five trait (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) based on the socio-demographic profile, overall stress level, and survey question. For each trait, determine if stress triggers a "negative" (distorted/under duress) or "positive" (adaptive/balanced) expression.
+Input:
+- Socio-demographic profile: {chara_summary}
+- Overall stress level: {stress_level} (low/medium/high)
+- Survey question: {question}
+- Trait vector: {trait_vector}  // JSON with openness, conscientiousness, etc., including level and description
+
+Instructions:
+1. Evaluate each of the five traits in order: Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism.
+    For each:
+    a. Consider how the question and profile might increase/decrease stress on that trait.
+    b. If stress is high enough to distort (e.g., extreme societal pressures triggering negative traits), output "negative"; else "positive".
+2. Base assessments on empirical Big Five theory under stress (e.g., high Neuroticism amplifies negative effects under stress).
+3. Ensure all five traits appear exactly once, in fixed order.
+
+Output Schema (JSON array only):
+[
+    {
+        "trait": "TRAIT_NAME",  // e.g., "Openness"
+        "stress_impact": "IMPACT",  // "negative" or "positive"
+    },
+    {
+        "trait": "Conscientiousness",
+        "stress_impact": "IMPACT",
+    },
+    {
+        "trait": "Extraversion",
+        "stress_impact": "IMPACT",
+    },
+    {
+        "trait": "Agreeableness",
+        "stress_impact": "IMPACT",
+    },
+    {
+        "trait": "Neuroticism",
+        "stress_impact": "IMPACT",
+    }
+]
+Requirements:
+- Output only valid JSON array.
+- Use exact trait names from the input vector.
+- Focus on societal (e.g., cultural/economic pressures) and situational (question context) stress.
+- Prediction must be concise and evidence-based.
+
+Proceed with assessment for the given input.

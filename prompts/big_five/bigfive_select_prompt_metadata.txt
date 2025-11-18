@@ -1,0 +1,38 @@
+Task: Predict the most likely Big Five trait levels (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) for the subject based on the provided socio-demographic profile and rule-based probability suggestions from empirical studies. Also provide metadata on top alternative levels with reasons for each trait (highest + 1 alternative per trait).
+Input:
+- Socio-demographic profile: {chara_summary}
+- Rule-based suggestion: {rule_bigfive} (probabilities: {rule_probs})
+
+Rules:
+
+1. Use empirical psychological and sociological linkages to map demographics and profile to Big Five trait levels (low/medium/high).
+2. Consider the rule-based suggestion as a starting point but refine based on full analysis.
+3. Identify the highest-probability level for each trait.
+4. For each trait, select 1 top alternative level (ranked by likelihood after the highest).
+5. Provide brief reasons for the highest and alternative levels, emphasizing fit to profile and demographics.
+
+Output Schema (JSON only):
+{
+    "bigfive": {  // Highest levels, e.g., {"openness": "high", "conscientiousness": "medium", ...}
+        "openness": "LEVEL",
+        "conscientiousness": "LEVEL",
+        "extraversion": "LEVEL",
+        "agreeableness": "LEVEL",
+        "neuroticism": "LEVEL"
+    },
+    "metadata": {
+        "alternatives": [  // List of alternatives (one per trait)
+            {"trait": "openness", "highest_level": "LEVEL", "highest_reason": "Brief explanation.", "alternative_level": "LEVEL", "alternative_reason": "Brief explanation."},
+            {"trait": "conscientiousness", "highest_level": "LEVEL", "highest_reason": "Brief explanation.", "alternative_level": "LEVEL", "alternative_reason": "Brief explanation."},
+            {"trait": "extraversion", "highest_level": "LEVEL", "highest_reason": "Brief explanation.", "alternative_level": "LEVEL", "alternative_reason": "Brief explanation."},
+            {"trait": "agreeableness", "highest_level": "LEVEL", "highest_reason": "Brief explanation.", "alternative_level": "LEVEL", "alternative_reason": "Brief explanation."},
+            {"trait": "neuroticism", "highest_level": "LEVEL", "highest_reason": "Brief explanation.", "alternative_level": "LEVEL", "alternative_reason": "Brief explanation."}
+        ]
+    }
+}
+Requirements:
+- Output only valid JSON.
+- Reasons should be concise (1-2 sentences), focusing on societal, cultural, and psychological matches.
+- Levels must be "low", "medium", or "high".
+
+Proceed with prediction for the given input.

@@ -1,0 +1,52 @@
+Task: For each of the five Big Five traits, perform reasoning and provide: trait description (from standard Big Five theory), selected answer, normalized weight.
+
+Input:
+- Socio-demographic profile: {chara_summary}
+- Overall stress level: {stress_level} (low/medium/high)
+- Survey question: {question}
+- Options: {options}
+- Impacted traits: {impacted_traits}  // JSON array with trait, stress_impact
+
+Instructions:
+1. Process in fixed order: Openness → Conscientiousness → Extraversion → Agreeableness → Neuroticism.
+    For each:
+    a. trait: Use exact name from input (e.g., "TRAIT_NAME")
+    b. stress_impact: Use exact value from input ("positive"/"negative")
+    c. RESULT: Selected option (e.g., "(B)")
+    d. WEIGHT: 0–1, adjusted by trait centrality + stress impact (e.g., Neuroticism higher weight under stress)
+2. Sum of all weights = 1.0
+
+Output Schema (JSON array only):
+[
+    {
+        "trait": "TRAIT_NAME",
+        "reasoning_result": "RESULT",
+        "weight": WEIGHT
+    },
+    {
+        "trait": "Conscientiousness",
+        "reasoning_result": "RESULT",
+        "weight": WEIGHT
+    },
+    {
+        "trait": "Extraversion",
+        "reasoning_result": "RESULT",
+        "weight": WEIGHT
+    },
+    {
+        "trait": "Agreeableness",
+        "reasoning_result": "RESULT",
+        "weight": WEIGHT
+    },
+    {
+        "trait": "Neuroticism",
+        "reasoning_result": "RESULT",
+        "weight": WEIGHT
+    }
+]
+Requirements:
+- Output only valid JSON.
+- Use exact trait and stress_impact from input.
+- Weights sum to 1.0.
+
+Proceed.

@@ -1,0 +1,32 @@
+Task: Evaluate each trait’s reasoning for consistency, adjust if needed, then synthesize a final answer using weights.
+Input:
+- Socio-demographic profile: {chara_summary}
+- Survey question: {question}
+- Options: {options}
+- Reasoning results: {reasoning_results}  // JSON array with trait, reasoning_result, reasoning_explained, weight, trait_description
+
+Instructions:
+1. For each trait (Openness → Conscientiousness → Extraversion → Agreeableness → Neuroticism):
+    Check if reasoning_result is consistent with:
+    - Trait description
+    - Stress impact (IMPACT from prior stage, if available)
+    - Socio-demographic profile
+    If inconsistent → rewrite reasoning_result and reasoning_explained (if has) to align
+2. Output revised version
+3. Synthesize:
+    a. Compute weighted vote across (possibly revised) reasoning_result
+    b. Select highest-weighted option as RESULT
+
+
+Output Schema (JSON object only):
+{
+    "conclusion": "RESULT",
+    "final_explanation": "Explanation referencing WEIGHTs and any adjustments."
+}
+
+Requirements:
+- Output only valid JSON.
+- RESULT must be one of the input options.
+- final_explanation must mention weights.
+
+Proceed.
