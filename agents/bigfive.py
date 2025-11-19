@@ -1,12 +1,12 @@
 # agents/bigfive.py
 import json
 from typing import Dict, Any, List
-from .meta_process import MetaProcess
-from .process_combination import ProcessCombination
-from .personality_theory import PersonalityTheory
-from ..utils import load_prompt
-from ..constants import BIGFIVE_DESC_LOOKUP  # Assume similar to PROCESS_DESC_LOOKUP for Big Five traits
-from ..agents._llm_stub import llm_call  # For convenience
+from mindset.meta_process import MetaProcess
+from mindset.process_combination import ProcessCombination
+from mindset.personality_theory import PersonalityTheory
+from utils import load_prompt
+from constants import BIGFIVE_DESC_LOOKUP  # Assume similar to PROCESS_DESC_LOOKUP for Big Five traits
+from . import llm_call  # For convenience
 import os
 import hashlib
 import logging

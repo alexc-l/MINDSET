@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any
 from agents.mbti import MBTITheory
+from agents.bigfive import BigFiveTheory
 from agents.llm_helper.llm_client import LLMClient
 from agents.mindset.process_combination import ProcessCombination
 
@@ -33,6 +34,7 @@ def args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, required=True, help='Path to the data file')
     parser.add_argument('--exp_name', type=str, required=True, help='Experiment name')
+    parser.add_argument('--theory_name', type=str, default="mbti", required=True, help='Personalty cogntive theory')
     parser.add_argument('--config_path', type=str, default="config/example_mbit.yml", help='Path to the config file')
     parser.add_argument('--llm_provider', type=str, default='openai', help='LLM provider')
     parser.add_argument('--llm_model', type=str, default='gpt-4o', help='LLM model')
@@ -46,9 +48,10 @@ def args():
     return parser.parse_args()
 
 
-def run_mbti_simulation(
+def run_simulation(
     data_path: str,
     exp_name: str,
+    theory_name: str,
     config_path: str = "config/example_mbit.yml",
     llm_provider: str = 'openai',
     llm_model: str = 'gpt-4o',
@@ -81,6 +84,7 @@ def run_mbti_simulation(
     start_time = datetime.now()
     log.info("=== MBTI Simulation Started ===")
     log.info(f"Data: {data_path}")
+    log.info(f"Personality Theories: {theory_name}")
     log.info(f"LLM: {llm_provider}/{llm_model}:{base_url}")
     log.info(f"Metadata: {'ON' if include_metadata else 'OFF'}")
     log.info(f"Output: {output_path}")
@@ -117,7 +121,13 @@ def run_mbti_simulation(
         log.info("LLM client initialized")
 
         # Initialize theory
-        theory = MBTITheory()
+        if theory_name == "mbti":
+            theory = MBTITheory()
+        elif theory_name == "bigfive":
+            theory = BigFiveTheory()
+        else:
+            log.error(f"Theory not implemented: {theory_name}")
+            raise NotImplementedError()
         combo = theory.build_process_combination()
         simulated = []
         person_counter = 0
@@ -204,6 +214,7 @@ def run_mbti_simulation(
         result_df = pd.DataFrame(simulated)
         if not os.path.exists(output_path):
             os.makedirs(output_path)
+        exp_name = f"{theory_name}-{exp_name}"
         result_df.to_csv(os.path.join(output_path, exp_name), index=False, mode='w+')
         total_responses = len(result_df)
 
@@ -221,9 +232,10 @@ def run_mbti_simulation(
 if __name__ == "__main__":
     arguments = args()
 
-    run_mbti_simulation(
+    run_simulation(
         data_path=arguments.data_path,
         exp_name=arguments.exp_name,
+        theory_name=arguments.theory_name,
         config_path=arguments.config_path,
         llm_provider=arguments.llm_provider,
         llm_model=arguments.llm_model,

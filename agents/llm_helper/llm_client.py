@@ -194,7 +194,7 @@ class LLMClient:
             else:
                 # Local: Pipeline batch
                 responses = self.client.batch_chat(batch_messages, temperature=temperature, max_new_tokens=max_tokens, **extra)
-                return [r.response.text for r in responses]
+                return [r.response.text for r in responses]            
         else:
             # Fallback sequential
             return [self.chat_completion(msgs, temperature, max_tokens, **extra) for msgs in batch_messages]
