@@ -52,3 +52,75 @@ all_process_desc = [
 
 # Fast lookup: Process_name → dict
 PROCESS_DESC_LOOKUP = {item["Abbreviation"]: item for item in all_process_desc}
+
+# constants.py — Big Five descriptions with stress modulation
+all_trait_desc = [
+    # High poles
+    {
+        "Trait_name": "Openness (high)",
+        "Level": "high",
+        "Description": "Imaginative, curious, open to new experiences, appreciates art and abstract ideas.",
+        "Stressed_desc": "Scattered, eccentric, detached from reality, prone to bizarre ideas or conspiracy thinking."
+    },
+    {
+        "Trait_name": "Conscientiousness (high)",
+        "Level": "high",
+        "Description": "Organized, responsible, self-disciplined, dutiful, and goal-oriented.",
+        "Stressed_desc": "Perfectionistic, compulsive, workaholic, rigid, unable to relax or delegate."
+    },
+    {
+        "Trait_name": "Extraversion (high)",
+        "Level": "high",
+        "Description": "Outgoing, energetic, assertive, enjoys social stimulation and being the center of attention.",
+        "Stressed_desc": "Attention-seeking, domineering, reckless, talks over others, cannot tolerate solitude."
+    },
+    {
+        "Trait_name": "Agreeableness (high)",
+        "Level": "high",
+        "Description": "Compassionate, cooperative, trusting, modest, and altruistic.",
+        "Stressed_desc": "People-pleasing, self-sacrificing, conflict-avoidant to a fault, suppresses own needs."
+    },
+    {
+        "Trait_name": "Neuroticism (high)",
+        "Level": "high",
+        "Description": "Emotionally reactive, experiences intense feelings, sensitive to stress.",
+        "Stressed_desc": "Overwhelmed, catastrophizing, panic-prone, emotionally flooded, paranoid."
+    },
+
+    # Low poles
+    {
+        "Trait_name": "Openness (low)",
+        "Level": "low",
+        "Description": "Conventional, prefers routine, practical, down-to-earth, resistant to change.",
+        "Stressed_desc": "Dogmatic, authoritarian, fearful rejection of novelty, closed-minded rigidity."
+    },
+    {
+        "Trait_name": "Conscientiousness (low)",
+        "Level": "low",
+        "Description": "Flexible, spontaneous, carefree, dislikes strict schedules.",
+        "Stressed_desc": "Irresponsible, chaotic, self-sabotaging, avoids all obligations."
+    },
+    {
+        "Trait_name": "Extraversion (low)",
+        "Level": "low",
+        "Description": "Reserved, reflective, enjoys solitude, low need for external stimulation.",
+        "Stressed_desc": "Socially withdrawn, paralyzed in groups, extreme isolation, depressive shutdown."
+    },
+    {
+        "Trait_name": "Agreeableness (low)",
+        "Level": "low",
+        "Description": "Competitive, skeptical, direct, prioritizes own interests.",
+        "Stressed_desc": "Hostile, manipulative, vindictive, sees others as threats."
+    },
+    {
+        "Trait_name": "Neuroticism (low)",
+        "Level": "low",
+        "Description": "Emotionally stable, calm under pressure, resilient, rarely upset.",
+        "Stressed_desc": "Emotionally flat, dismissive of others’ suffering, reckless risk-taking due to lack of anxiety."
+    },
+]
+
+# Fast lookup: "openness" → high/low entry based on predicted level
+BIGFIVE_DESC_LOOKUP = {
+    item["Trait_name"].split(" (")[0]: item for item in all_trait_desc
+}

@@ -17,5 +17,5 @@ Target Question: {question}
 
 Output (strict JSON only):
 {
-  "final_conclusion": "RESULT"
+  "conclusion": "RESULT"
 }

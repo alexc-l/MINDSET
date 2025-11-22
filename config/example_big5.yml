@@ -1,0 +1,72 @@
+constraint_config:
+  use_eq: true
+  use_iq: false
+  use_ses: true
+
+stages:
+  - name: stress_chara
+    class: agents.mindset.socio_demo_generator.StressCharaMetaProcess
+    cache_enabled: true
+    question_dependent: false   # Same for all questions → reuse
+    include_metadata: false
+    prompt_paths:
+      default: socio_demo_profile/stress_chara_prompt
+      metadata: socio_demo_profile/stress_chara_prompt_metadata
+      snippet_paths:
+        eq: socio_demo_profile/snippets/eq_snippet
+        iq: socio_demo_profile/snippets/iq_snippet
+        ses: socio_demo_profile/snippets/ses_snippet
+
+  - name: bigfive_select
+    class: agents.bigfive.BigFiveSelectMetaProcess
+    cache_enabled: true
+    question_dependent: false   # Depends only on person, not question
+    include_metadata: false
+    prompt_paths:
+      default: big_five/bigfive_select_prompt
+      metadata: big_five/bigfive_select_prompt_metadata
+
+  - name: get_traits
+    class: agents.bigfive.GetTraitVectorMetaProcess
+    cache_enabled: false
+    question_dependent: false
+
+  - name: assign_impact
+    class: agents.bigfive.AssignImpactMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    include_metadata: false
+    prompt_paths:
+      default: big_five/assign_impact_prompt
+      metadata: big_five/assign_impact_prompt_metadata
+
+  - name: reason
+    class: agents.bigfive.ReasonMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    include_metadata: false
+    prompt_paths:
+      default: big_five/reason_prompt
+      metadata: big_five/reason_prompt_metadata
+
+  - name: synthesis
+    class: agents.bigfive.SynthesisMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    include_metadata: false
+    prompt_paths:
+      default: big_five/synthesis_prompt
+      metadata: big_five/synthesis_prompt_metadata
+
+  - name: apply_constraints
+    class: agents.mindset.constraints.ConstraintMetaProcess
+    cache_enabled: true
+    question_dependent: true
+    include_metadata: false
+    prompt_paths:
+      default: constraints/unified_constraint_prompt
+      metadata: constraints/unified_constraint_prompt_metadata
+      snippet_paths:
+        eq: constraints/snippets/eq_snippet
+        iq: constraints/snippets/iq_snippet
+        ses: constraints/snippets/ses_snippet

@@ -27,6 +27,7 @@ try:
     from lmdeploy import pipeline, ChatTemplateConfig
 except ImportError:
     lmdeploy = None
+import logging
 
 log = logging.getLogger(__name__)
 

@@ -94,7 +94,7 @@ class ConfigurableMetaProcess(MetaProcess):
         log.debug(f"[STAGE {self.name}] → Executing {actual_class.__name__}")
         # End log
 
-        raw_output = instance.execute(question, options, personality_profile, constraints, include_metadata, **extra)
+        raw_output = instance.execute(question, options, personality_profile, constraints, **extra)
 
         parsed = parse_messy_json(raw_output, {"error": "Error parsing raw output"})
         clean_output = json.dumps(parsed, ensure_ascii=False)
