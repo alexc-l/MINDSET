@@ -121,9 +121,9 @@ def run_simulation(
         log.info("LLM client initialized")
 
         # Initialize theory
-        if theory_name == "mbti":
+        if theory_name.lower() == "mbti":
             theory = MBTITheory()
-        elif theory_name == "bigfive":
+        elif theory_name .lower() == "bigfive":
             theory = BigFiveTheory()
         else:
             log.error(f"Theory not implemented: {theory_name}")
@@ -178,15 +178,6 @@ def run_simulation(
                     answer_json = combo.combine(question, options, profile, constraints,
                                                 include_metadata=include_metadata, **extra_with_debug)
 
-                    # answer_json = combo.combine(
-                    #     question=question,
-                    #     options=options,
-                    #     personality_profile=profile,
-                    #     constraints=constraints,
-                    #     include_metadata=include_metadata,
-                    #     demographics=demographics
-                    # )
-                    # Parse final answer
                     try:
                         answer_data = json.loads(answer_json)
                         final_answer = answer_data.get('conclusion', answer_json)

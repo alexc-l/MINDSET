@@ -10,15 +10,6 @@ Task:
 
 Input: JSON object of characteristics as {demographics}
 
-Rules for Stress Assignment:
-- Stress score (0-100) reflects societal impact (e.g., economic, cultural, or demographic pressures) and general psychological influence on behaviors/values.
-- Higher stress for features with strong societal stressors (e.g., low income = high stress due to financial insecurity; older age = moderate stress from life transitions).
-- No duplicates; handle all input characteristics.
-
-Evaluation for Filtering:
-- Retain if stress_level >= average_stress, prioritizing high societal stress features (e.g., socioeconomic status, cultural background).
-- Consider direct ties to personality/simulation outcomes, but ensure societal stress is a key lens.
-
 Output Schema (JSON only):
 {
     "stress_level": "low/medium/high",  // Overall category: <33 low, 33-66 medium, >66 high based on average
