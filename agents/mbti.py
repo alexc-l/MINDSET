@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 class MBTISelectMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
-                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> str:
+                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> (str, str):
         prev_output_dict = json.loads(extra.get("prev_output"))
         chara_summary = prev_output_dict.get('chara_summary', None)
         rule_mbti = personality_profile.get('rule_mbti', None)
@@ -35,7 +35,7 @@ class MBTISelectMetaProcess(MetaProcess):
         )
         if "api_batch" in extra.keys():
             return prompt
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class GetStackMetaProcess(MetaProcess):
     """Python: Gets full function stack from MBTI type."""
@@ -60,7 +60,7 @@ class GetStackMetaProcess(MetaProcess):
     }
 
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         prev_output_dict = json.loads(extra.get("prev_output", "{}"))
         mbti_type = prev_output_dict.get('mbti', '')
         if not mbti_type:
@@ -68,11 +68,11 @@ class GetStackMetaProcess(MetaProcess):
         stack = self._STACKS.get(mbti_type.upper(), {})
         if not stack:
             raise ValueError(f"Unknown MBTI type: {mbti_type}")
-        return json.dumps(stack)
+        return "", json.dumps(stack)
 
 class AssignImpactMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         stack = extra.get('prev_output', '{}')
         stress_level = extra.get('stress_level', 'medium')
         chara_summary = extra.get('chara_summary', '')
@@ -86,11 +86,11 @@ class AssignImpactMetaProcess(MetaProcess):
         if "api_batch" in extra.keys():
             return prompt
 
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class ReasonMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         impacted_stack = extra.get('prev_output', '{}')
         chara_summary = extra.get('chara_summary', '')
         stress_level = extra.get('stress_level', 'medium')
@@ -125,11 +125,11 @@ class ReasonMetaProcess(MetaProcess):
         if "api_batch" in extra.keys():
             return prompt
 
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class SynthesisMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         reasoning_results = extra.get('prev_output', '[]')
         chara_summary = extra.get('chara_summary', '')
         prompt_path = extra.get('prompt_path')  # Injected
@@ -143,7 +143,7 @@ class SynthesisMetaProcess(MetaProcess):
         if "api_batch" in extra.keys():
             return prompt
         
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class MBTICombination(ProcessCombination):
     def combine(self, question: str, options: str, personality_profile: Dict[str, Any],
@@ -163,7 +163,7 @@ class MBTICombination(ProcessCombination):
             stage_name = stage_config.get("name", "unknown")
 
             stage_extra = {**extra, **state}
-            output = stage.execute(
+            request, output = stage.execute(
                 question, options, personality_profile, constraints,
                 **stage_extra
             )

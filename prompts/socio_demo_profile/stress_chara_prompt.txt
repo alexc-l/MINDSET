@@ -7,6 +7,7 @@ Task:
 4. Produce a summarized socio-demographic profile as a one-paragraph natural description, focusing primarily on the high-stress (retained) features with their stress indicators integrated, while briefly incorporating low-stress (dropped) features for completeness.
 5. Include the following active inferences (if any):
 {active_snippets}
+6. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Input: JSON object of characteristics as {demographics}
 

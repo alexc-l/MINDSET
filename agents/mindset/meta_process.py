@@ -16,7 +16,7 @@ class MetaProcess(ABC):
         constraints: Dict[str, Any],
         include_metadata: bool = False,
         **extra: Any,
-    ) -> str:
+    ) -> (str, str):
         """
         Returns the raw text output of this meta-step.
         Concrete subclasses will fill the prompt, call the LLM, and return the response.

@@ -5,12 +5,12 @@ from typing import Dict, Any
 
 from ..llm_helper._llm_stub import llm_call
 from .meta_process import MetaProcess
-from ..utils import load_prompt, parse_messy_json
+from ..utils import load_prompt, parse_messy_json, parse_messy_json_with_fallback
 
 
 class ConstraintMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
-                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> str:
+                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> (str, str):
 
         prev_output_dict = json.loads(extra.get("prev_output", "{}"))
         prev_predict = prev_output_dict.get("conclusion", "")
@@ -61,5 +61,5 @@ class ConstraintMetaProcess(MetaProcess):
         )
 
         raw_output = llm_call(master_prompt, llm_client=extra.get('llm_client', None))
-        parsed = parse_messy_json(raw_output, fallback=prev_predict)
-        return json.dumps(parsed)
+        parsed = parse_messy_json_with_fallback(raw_output, master_prompt)
+        return master_prompt, json.dumps(parsed)

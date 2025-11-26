@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 from .mindset.meta_process import MetaProcess
 from .mindset.process_combination import ProcessCombination
 from .mindset.personality_theory import PersonalityTheory
-from .utils import load_prompt, parse_messy_json
+from .utils import load_prompt, parse_messy_json, parse_messy_json_with_fallback
 from .constants import BIGFIVE_DESC_LOOKUP  # Assume similar to PROCESS_DESC_LOOKUP for Big Five traits
 from .llm_helper._llm_stub import llm_call  # For convenience
 import os
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 class BigFiveSelectMetaProcess(MetaProcess):
     """Selects Big Five trait levels based on demo, profile, rules (LLM)."""
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
-                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> str:
+                constraints: Dict[str, Any], include_metadata: bool = False, **extra) -> (str, str):
         chara_summary = extra.get('chara_summary', '')  # From previous
         rule_bigfive = personality_profile.get('rule_bigfive', {})
         rule_probs = personality_profile.get('rule_probs', {})
@@ -26,7 +26,7 @@ class BigFiveSelectMetaProcess(MetaProcess):
             .replace("{rule_bigfive}", json.dumps(rule_bigfive))
             .replace("{rule_probs}", json.dumps(rule_probs))
         )
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class GetTraitVectorMetaProcess(MetaProcess):
     """Python: Gets full trait vector (levels/scores) from Big Five prediction."""
@@ -39,7 +39,7 @@ class GetTraitVectorMetaProcess(MetaProcess):
     }
 
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         prev_output_dict = json.loads(extra.get('prev_output', '{}'))  # From state, e.g. {"openness": "high", ...}
         bigfive_type = prev_output_dict.get('bigfive', {})
         if not bigfive_type:
@@ -55,12 +55,12 @@ class GetTraitVectorMetaProcess(MetaProcess):
             else:
                 log.warning(f"Unknown trait or level: {trait}={level}")
 
-        return json.dumps(trait_vector)
+        return "", json.dumps(trait_vector)
 
 class AssignImpactMetaProcess(MetaProcess):
     """Evaluates impact of societal/situational stress on each trait."""
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         trait_vector = extra.get('prev_output', '{}')
         stress_level = extra.get('stress_level', 'medium')
         chara_summary = extra.get('chara_summary', '')
@@ -73,19 +73,19 @@ class AssignImpactMetaProcess(MetaProcess):
         )
 
         output = llm_call(prompt, llm_client=extra.get('llm_client', None))
-        output_dict = parse_messy_json(output, {"error": "Parsed JSON error"})
+        output_dict = parse_messy_json_with_fallback(output, prompt)
         if isinstance(output_dict, list):
             for trait_dict in output_dict:
                 trait_name = trait_dict.get("trait")
                 level = parse_messy_json(trait_vector, {}).get(trait_name, {}).get("level", "medium")
                 trait_dict["level"] = level
-            return json.dumps(output_dict)
+            return prompt, json.dumps(output_dict)
         else:
             raise ValueError("Unexpected output format")
 
 class ReasonMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         impacted_traits = extra.get('prev_output', '{}')
         chara_summary = extra.get('chara_summary', '')
         stress_level = extra.get('stress_level', 'medium')
@@ -123,11 +123,11 @@ class ReasonMetaProcess(MetaProcess):
             .replace("{options}", options)
             .replace("{impacted_traits}", enriched_traits_json)
         )
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class SynthesisMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         reasoning_results = extra.get('prev_output', '[]')
         chara_summary = extra.get('chara_summary', '')
         prompt_path = extra.get('prompt_path')  # Injected
@@ -137,7 +137,7 @@ class SynthesisMetaProcess(MetaProcess):
             .replace("{options}", options)
             .replace("{reasoning_results}", reasoning_results)
         )
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class BigFiveCombination(ProcessCombination):
     def combine(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
@@ -150,7 +150,7 @@ class BigFiveCombination(ProcessCombination):
             stage_config = getattr(stage, '_stage_config', {})
             stage_name = stage_config.get("name", "unknown")
             stage_extra = {**extra, **state}
-            output = stage.execute(question, options, personality_profile, constraints,
+            request, output = stage.execute(question, options, personality_profile, constraints,
                                    **stage_extra)
             state['prev_output'] = output
 

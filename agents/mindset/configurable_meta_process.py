@@ -6,7 +6,7 @@ import hashlib
 import logging
 from typing import Dict, Any
 from .meta_process import MetaProcess
-from ..utils import parse_messy_json
+from ..utils import parse_messy_json, parse_messy_json_with_fallback
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class ConfigurableMetaProcess(MetaProcess):
         return hashlib.md5(json.dumps(key, sort_keys=True, default=str).encode()).hexdigest()[:12]
 
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
-                constraints: Dict[str, Any], include_metadata: bool = None, **extra) -> str:
+                constraints: Dict[str, Any], include_metadata: bool = None, **extra) -> (str, str):
         include_metadata = include_metadata if include_metadata is not None else self.include_metadata_default
         cache_dir = extra.get("cache_dir", "cache")
         interview_id = extra.get("interview_id", "unknown")
@@ -61,7 +61,7 @@ class ConfigurableMetaProcess(MetaProcess):
                     log.info(f"[STAGE {self.name}] → END (cached)")
                     extra["prev_output"] = clean_output
                     # Inject parsed dict for next stage
-                    return clean_output
+                    return "", clean_output
 
             # === LOG: Cache Miss → LLM ===
             log.info(f"[STAGE {self.name}] → CACHE MISS → Calling LLM")
@@ -93,10 +93,8 @@ class ConfigurableMetaProcess(MetaProcess):
         # === LOG: Running Real Stage ===
         log.debug(f"[STAGE {self.name}] → Executing {actual_class.__name__}")
         # End log
-
-        raw_output = instance.execute(question, options, personality_profile, constraints, **extra)
-
-        parsed = parse_messy_json(raw_output, {"error": "Error parsing raw output"})
+        request, raw_output = instance.execute(question, options, personality_profile, constraints, **extra)
+        parsed = parse_messy_json_with_fallback(raw_output, request)
         clean_output = json.dumps(parsed, ensure_ascii=False)
 
         # === CACHE CLEAN JSON ===
@@ -109,4 +107,4 @@ class ConfigurableMetaProcess(MetaProcess):
         extra["prev_output"] = clean_output
 
         log.info(f"[STAGE {self.name}] → END (LLM)")
-        return clean_output  # Return clean JSON string
+        return request, clean_output # Return clean JSON string

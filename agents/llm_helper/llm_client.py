@@ -241,7 +241,6 @@ class LLMClient:
                     max_tokens=max_tokens,
                     **extra
                 )
-                print(resp.choices[0].message.content)
                 # exit()
                 return resp.choices[0].message.content
             else:

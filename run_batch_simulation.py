@@ -80,7 +80,7 @@ def run_batch_simulation(
 
                 # Now get current stage prompt
                 stage_wrapper = combo.stages[stage_idx]
-                prompt = stage_wrapper.execute(
+                request, prompt = stage_wrapper.execute(
                     question=question,
                     options=options,
                     personality_profile=state["personality_profile"],

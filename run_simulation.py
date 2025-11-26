@@ -35,7 +35,7 @@ def args():
     parser.add_argument('--data_path', type=str, required=True, help='Path to the data file')
     parser.add_argument('--exp_name', type=str, required=True, help='Experiment name')
     parser.add_argument('--theory_name', type=str, default="mbti", required=True, help='Personalty cogntive theory')
-    parser.add_argument('--config_path', type=str, default="config/example_mbit.yml", help='Path to the config file')
+    parser.add_argument('--config_path', type=str, default="config/example_mbti.yml", help='Path to the config file')
     parser.add_argument('--llm_provider', type=str, default='openai', help='LLM provider')
     parser.add_argument('--llm_model', type=str, default='gpt-4o', help='LLM model')
     parser.add_argument('--base_url', type=str, default=None, help='API endpoint url')
@@ -52,7 +52,7 @@ def run_simulation(
     data_path: str,
     exp_name: str,
     theory_name: str,
-    config_path: str = "config/example_mbit.yml",
+    config_path: str = "config/example_mbti.yml",
     llm_provider: str = 'openai',
     llm_model: str = 'gpt-4o',
     base_url: str = None,

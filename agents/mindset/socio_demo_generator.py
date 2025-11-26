@@ -9,7 +9,7 @@ from ..utils import load_prompt
 class StressCharaMetaProcess(MetaProcess):
     """MARK 1+2: Generates socio-demographic profile with stress (no MBTI)."""
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
-                include_metadata: bool = False, **extra) -> str:
+                include_metadata: bool = False, **extra) -> (str, str):
         demographics = extra.get('demographics')
         stage_config = getattr(self, 'stage_config', {})
         constraint_cfg = extra.get('global_constraint_config', {}) # From global
@@ -33,4 +33,4 @@ class StressCharaMetaProcess(MetaProcess):
         )
 
         assert demographics is not None and prompt_path is not None, f"demographics and prompt path is None!"
-        return llm_call(prompt, llm_client=extra.get('llm_client', None))
+        return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
