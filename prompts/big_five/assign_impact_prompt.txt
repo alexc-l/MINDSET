@@ -12,6 +12,7 @@ Instructions:
     b. If stress is high enough to distort (e.g., extreme societal pressures triggering negative traits), output "negative"; else "positive".
 2. Base assessments on empirical Big Five theory under stress (e.g., high Neuroticism amplifies negative effects under stress).
 3. Ensure all five traits appear exactly once, in fixed order.
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

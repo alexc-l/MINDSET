@@ -15,6 +15,7 @@ Instructions:
     c. RESULT: Selected option (e.g., "(B)")
     d. WEIGHT: 0–1, adjusted by trait centrality + stress impact (e.g., Neuroticism higher weight under stress)
 2. Sum of all weights = 1.0
+3. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

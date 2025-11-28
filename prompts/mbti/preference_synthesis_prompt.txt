@@ -17,17 +17,12 @@ Instructions:
    - Mentions **at least two** processes and their weights
    - Explains how weights led to the decision
 5. Do **not** invent new process names, results, or weights.
+6. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON object only):
 {
     "conclusion": "RESULT",
     "explanation": "Brief explanation referencing WEIGHTs and how they led to RESULT."
 }
-
-Requirements:
-- Output **only** valid JSON.
-- `RESULT` must be **exactly** one of the input options.
-- `explanation` must reference **weights**.
-- No extra fields.
 
 Proceed.

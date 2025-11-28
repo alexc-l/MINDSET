@@ -15,6 +15,7 @@ Instructions:
    - If stress is high enough to distort (e.g., extreme societal pressures triggering negative traits), output "negative"; else "positive".
 3. Base assessments on empirical MBTI theory under stress (e.g., inferior emerges negatively under high stress).
 4. Ensure all four processes appear exactly once, in fixed order.
+5. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

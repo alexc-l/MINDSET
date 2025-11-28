@@ -24,6 +24,7 @@ Instructions:
    - At least **two** processes and their `weight`
    - Any adjustments made
    - How weights determined `RESULT`
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON object only):
 {

@@ -59,6 +59,9 @@ class ConstraintMetaProcess(MetaProcess):
             .replace("{stress_level}", extra.get("stress_level", ""))
             .replace("{question}", question)
         )
+        if "batch_size" in extra.keys():
+            return master_prompt, None
+
 
         raw_output = llm_call(master_prompt, llm_client=extra.get('llm_client', None))
         parsed = parse_messy_json_with_fallback(raw_output, master_prompt)

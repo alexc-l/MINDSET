@@ -16,7 +16,7 @@ Instructions:
 3. Synthesize:
     a. Compute weighted vote across (possibly revised) reasoning_result
     b. Select highest-weighted option as RESULT
-
+4.Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON object only):
 {

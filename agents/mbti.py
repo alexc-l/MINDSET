@@ -33,8 +33,8 @@ class MBTISelectMetaProcess(MetaProcess):
             .replace("{rule_probs}", json.dumps(rule_probs, ensure_ascii=False))
             .replace("{chara_summary}", chara_summary)
         )
-        if "api_batch" in extra.keys():
-            return prompt
+        if "batch_size" in extra.keys():
+            return prompt, None
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class GetStackMetaProcess(MetaProcess):
@@ -83,8 +83,8 @@ class AssignImpactMetaProcess(MetaProcess):
             .replace("{stack}", stack)
         )
 
-        if "api_batch" in extra.keys():
-            return prompt
+        if "batch_size" in extra.keys():
+            return prompt, None
 
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
@@ -122,8 +122,8 @@ class ReasonMetaProcess(MetaProcess):
             .replace("{stack}", enriched_stack_json)
         )
 
-        if "api_batch" in extra.keys():
-            return prompt
+        if "batch_size" in extra.keys():
+            return prompt,  None
 
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
@@ -140,8 +140,8 @@ class SynthesisMetaProcess(MetaProcess):
             .replace("{reasoning_results}", reasoning_results)
         )
 
-        if "api_batch" in extra.keys():
-            return prompt
+        if "batch_size" in extra.keys():
+            return prompt, None
         
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
@@ -159,7 +159,7 @@ class MBTICombination(ProcessCombination):
         log.info(f"Starting pipeline for ID={state['interview_id']}, Q={state['q_id']}")
 
         for stage in self.stages:
-            stage_config = getattr(stage, '_stage_config', {})
+            stage_config = getattr(stage, 'stage_config', {})
             stage_name = stage_config.get("name", "unknown")
 
             stage_extra = {**extra, **state}

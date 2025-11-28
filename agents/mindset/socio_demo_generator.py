@@ -32,5 +32,8 @@ class StressCharaMetaProcess(MetaProcess):
             .replace("{demographics}", json.dumps(demographics, ensure_ascii=False))
         )
 
+        if "batch_size" in extra.keys():
+            return prompt, None
+
         assert demographics is not None and prompt_path is not None, f"demographics and prompt path is None!"
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))

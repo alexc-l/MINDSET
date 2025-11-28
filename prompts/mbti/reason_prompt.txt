@@ -21,6 +21,7 @@ Instructions:
         • Overall stress level
    - Sum of all weights must be 1.0
 3. Do **not** invent process names, impacts, or descriptions.
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

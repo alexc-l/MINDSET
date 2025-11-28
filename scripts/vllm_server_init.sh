@@ -1,5 +1,5 @@
 #export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH
-
+export VLLM_LOGGING_LEVEL=DEBUG
 vllm serve cache/Qwen/Qwen3-8B \
   --host 0.0.0.0 \
   --port 8000 \

@@ -10,6 +10,7 @@ Rules:
 - Use empirical psychological and sociological linkages to map demographics and profile to MBTI type.
 - Consider the rule-based suggestion as a starting point but refine based on full analysis.
 - Select the single highest-probability MBTI type.
+- Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON only):
 {

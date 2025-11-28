@@ -12,6 +12,7 @@ Rules:
 - Identify the highest-probability MBTI type.
 - Select top 3 alternative types (ranked by likelihood after the highest).
 - Provide brief reasons for each of the four types, emphasizing fit to profile and demographics.
+- Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON only):
 {

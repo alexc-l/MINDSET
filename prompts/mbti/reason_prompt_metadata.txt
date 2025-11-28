@@ -23,6 +23,7 @@ Instructions:
    - `reasoning_explained`: 1–2 sentences linking profile, stress, and choice
    - `WEIGHT`: 0–1, adjusted by hierarchy + stress impact
 3. Sum of all weights = 1.0
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

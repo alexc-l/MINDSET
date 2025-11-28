@@ -13,6 +13,7 @@ Instructions:
     c. Provide a concise reason (1-2 sentences) explaining the prediction, referencing profile elements, stress level, and question context.
 2. Base assessments on empirical Big Five theory under stress (e.g., high Neuroticism amplifies negative effects under stress).
 3. Ensure all five traits appear exactly once, in fixed order.
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON array only):
 [

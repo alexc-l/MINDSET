@@ -81,7 +81,7 @@ def get_local_fallback_client():
 def parse_messy_json_with_fallback(
     raw: str,
     request: str,
-    max_reasoning_tokens: int = 1500,
+    max_reasoning_tokens: int = 2048,
     fallback: Dict = None
 ) -> Dict:
     """Try normal parse → if fail → use fast fallback model (local or remote)"""

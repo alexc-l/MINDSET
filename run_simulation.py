@@ -173,8 +173,6 @@ def run_simulation(
                     # Debugging: Add debug_cache_dir to extra for access in combine/execute
                     extra_with_debug = {'demographics': demographics,  'llm_client': llm_client, 'cache_dir': debug_cache_dir,
                                         'debug_mode': debug_mode, 'interview_id': interview_id, 'q_id': q_id}
-                    # End debugging
-
                     answer_json = combo.combine(question, options, profile, constraints,
                                                 include_metadata=include_metadata, **extra_with_debug)
 

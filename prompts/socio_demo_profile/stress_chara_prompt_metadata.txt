@@ -7,19 +7,9 @@ Task:
 4. Produce a summarized socio-demographic profile as a one-paragraph natural description, focusing primarily on the high-stress (retained) features with their stress indicators integrated, while briefly incorporating low-stress (dropped) features for completeness.
 5. Include the following active inferences (if any, provide reason with brief explanation):
 {active_snippets}
+6. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Input: JSON object of characteristics as {demographics}
-
-Rules for Stress Assignment:
-- Stress score (0-100) reflects societal impact (e.g., economic, cultural, or demographic pressures) and general psychological influence on behaviors/values.
-- Higher stress for features with strong societal stressors (e.g., low income = high stress due to financial insecurity; older age = moderate stress from life transitions).
-- Include a brief explanation for each, emphasizing societal context where relevant.
-- No duplicates; handle all input characteristics.
-
-Evaluation for Filtering:
-- Retain if stress_level >= average_stress, prioritizing high societal stress features (e.g., socioeconomic status, cultural background).
-- Provide retention_reason for kept (e.g., "High societal stress from economic factors"), exclusion_reason for dropped (e.g., "Low impact on value preferences").
-- Consider direct ties to personality/simulation outcomes, but ensure societal stress is a key lens.
 
 Output Schema (JSON only):
 {

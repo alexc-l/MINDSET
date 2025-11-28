@@ -10,6 +10,7 @@ Rules:
 3. Identify the highest-probability level for each trait.
 4. For each trait, select 1 top alternative level (ranked by likelihood after the highest).
 5. Provide brief reasons for the highest and alternative levels, emphasizing fit to profile and demographics.
+6. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON only):
 {

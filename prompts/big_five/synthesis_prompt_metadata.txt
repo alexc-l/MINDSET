@@ -19,7 +19,7 @@ Instructions:
 4. Write final_explanation (1–2 sentences) referencing:
     - Any adjustments made
     - How weights determined RESULT
-
+5.Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON object only):
 {

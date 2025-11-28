@@ -26,6 +26,9 @@ class BigFiveSelectMetaProcess(MetaProcess):
             .replace("{rule_bigfive}", json.dumps(rule_bigfive))
             .replace("{rule_probs}", json.dumps(rule_probs))
         )
+        if "batch_size" in extra.keys():
+            return prompt, None
+
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class GetTraitVectorMetaProcess(MetaProcess):
@@ -71,17 +74,12 @@ class AssignImpactMetaProcess(MetaProcess):
             .replace("{question}", question)
             .replace("{trait_vector}", trait_vector)
         )
-
-        output = llm_call(prompt, llm_client=extra.get('llm_client', None))
-        output_dict = parse_messy_json_with_fallback(output, prompt)
-        if isinstance(output_dict, list):
-            for trait_dict in output_dict:
-                trait_name = trait_dict.get("trait")
-                level = parse_messy_json(trait_vector, {}).get(trait_name, {}).get("level", "medium")
-                trait_dict["level"] = level
-            return prompt, json.dumps(output_dict)
+        if "batch_size" in extra.keys():
+            return prompt, None
         else:
-            raise ValueError("Unexpected output format")
+            output = llm_call(prompt, llm_client=extra.get('llm_client', None))
+            output_dict = parse_messy_json_with_fallback(output, prompt)
+            return prompt, json.dumps(output_dict)
 
 class ReasonMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
@@ -123,6 +121,9 @@ class ReasonMetaProcess(MetaProcess):
             .replace("{options}", options)
             .replace("{impacted_traits}", enriched_traits_json)
         )
+        if "batch_size" in extra.keys():
+            return prompt, None
+
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class SynthesisMetaProcess(MetaProcess):
@@ -137,6 +138,9 @@ class SynthesisMetaProcess(MetaProcess):
             .replace("{options}", options)
             .replace("{reasoning_results}", reasoning_results)
         )
+        if "batch_size" in extra.keys():
+            return prompt, None
+
         return prompt, llm_call(prompt, llm_client=extra.get('llm_client', None))
 
 class BigFiveCombination(ProcessCombination):
@@ -147,7 +151,7 @@ class BigFiveCombination(ProcessCombination):
         bigfive = None
 
         for i, stage in enumerate(self.stages):
-            stage_config = getattr(stage, '_stage_config', {})
+            stage_config = getattr(stage, 'stage_config', {})
             stage_name = stage_config.get("name", "unknown")
             stage_extra = {**extra, **state}
             request, output = stage.execute(question, options, personality_profile, constraints,
@@ -171,6 +175,18 @@ class BigFiveCombination(ProcessCombination):
                     bigfive = select_json.get('bigfive', {})
                     state['bigfive'] = bigfive
                     personality_profile['bigfive'] = bigfive  # Update profile if needed
+                except json.JSONDecodeError:
+                    pass
+
+            if stage_name == "assign_impact":
+                try:
+                    output_dict = parse_messy_json_with_fallback(output, request)
+                    for trait_dict in output_dict:
+                        level = trait_dict.get("level", "medium")
+                        trait_dict["level"] = level
+                    state['prev_output'] = json.dumps(output_dict)
+                    print(output_dict)
+                    print(state['prev_output'])
                 except json.JSONDecodeError:
                     pass
 

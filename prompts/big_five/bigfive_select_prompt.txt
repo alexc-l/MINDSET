@@ -8,6 +8,7 @@ Rules:
 1. Use empirical psychological and sociological linkages to map demographics and profile to Big Five trait levels (low/medium/high).
 2. Consider the rule-based suggestion as a starting point but refine based on full analysis.
 3. Identify the highest-probability level for each trait.
+4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Output Schema (JSON only):
 {

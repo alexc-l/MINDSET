@@ -2,7 +2,7 @@ constraint_config:
   use_eq: true
   use_iq: false
   use_ses: true
-
+combination_class: agents.bigfive.BigFiveCombination
 stages:
   - name: stress_chara
     class: agents.mindset.socio_demo_generator.StressCharaMetaProcess

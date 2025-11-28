@@ -4,12 +4,11 @@ Task: Apply active constraints to refine the synthesis result. Follow these step
 
 1. Review the synthesis conclusion: {prev_result}
    Explanation: {prev_explanation}
-
 2. Apply each active constraint below and predict the result under each constraint:
 {active_constraints}
-
 3. If all constraints align with synthesis → retain result.
    If any conflict → weight the impact of the constraints and default cognitive results from previous stages, higher weights lead to override using constraints.
+ 4. Give a brief but sufficient reasoning on the task, you don't need to think too much.
 
 Input Profile: {chara_summary}
 Stress Level: {stress_level}
