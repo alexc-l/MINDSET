@@ -103,7 +103,7 @@ def run_simulation(
         log.info(f"Loaded {len(human_chara)} human profiles, {len(qa_pair.columns)-2} questions")
 
         # Extract questions
-        q_ids = qa_pair.columns[3:].tolist()  # Skip cluster, D_INTERVIEW
+        q_ids = qa_pair.columns[2:].tolist()  # Skip cluster, D_INTERVIEW
         questions = {}
         for q_id in q_ids:
             q_text = qa_pair[q_id].iloc[0]  # Definition row

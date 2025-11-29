@@ -107,7 +107,7 @@ def run_batch_simulation(arguments):
     # Load data
     human_chara = pd.read_excel(data_path, sheet_name='Human_chara', header=0).iloc[1:]
     qa_pair = pd.read_excel(data_path, sheet_name='QA_pair', header=0)
-    q_ids = qa_pair.columns[3:].tolist()
+    q_ids = qa_pair.columns[2:].tolist()
     questions = {q_id: qa_pair[q_id].iloc[0] for q_id in q_ids}
 
     # Init theory
