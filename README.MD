@@ -1,67 +1,144 @@
-### Using LMDeploy for Experiments on NVIDIA Spark
+# MINDSET: Personality-Theory-Guided Zero-Shot Reasoning for Faithful Simulation of Human Values
+![](docs/pipeline.png)
+## Code Repository
 
-#### Step 1: Install LMDeploy Package
-LMDeploy is primarily installed via pip. Use the pre-built CUDA 12 wheel for Spark compatibility (avoids compilation). Run in your conda env:
+This repository contains the official implementation of **MINDSET**, 
+the personality-theory-guided zero-shot multi-stage reasoning framework for simulating human responses 
+in global value surveys (e.g., World Values Survey, Pew Research).
 
-```bash
-# Create/activate env
-conda create -n lmdeploy python=3.10
-conda activate lmdeploy
+MINDSET structures LLM reasoning around established personality theories (Big Five or MBTI) to produce 
+cognitively coherent, socially grounded, and distributionally faithful survey responses, outperforming 
+fine-tuned and chain-of-thought baselines.
 
-# Install LMDeploy (CUDA 12 pre-built; includes TurboMind)
-pip install lmdeploy[all,cuda12]  # 'all' for full backends (Turbomind, PyTorch, vLLM)
+### Repository Entries
 
-# Verify
-python -c "import lmdeploy; print(lmdeploy.__version__)"  # Should be 0.10.2+
-nvidia-smi  # Confirm GPU (Spark B200)
+```
+./data/                                # Directory for input Excel files (not included; see Data Preparation)
+./config/
+├── example_big5.yml                   # Stage definitions, prompts, and constraints for Big Five
+└── example_mbti.yml                   # Stage definitions, prompts, and constraints for MBTI
+./scripts
+├── automate_big5_pipeline.sh          # Automated full pipeline for Big Five theory (recommended for main results)
+├── automate_mbti_pipeline.sh          # Automated full pipeline for MBTI theory
+├── run_e2e_simulation.sh              # End-to-end simulation using OpenAI API (e.g., gpt-4o-mini)
+├── run_e2e_simulation_local.sh        # End-to-end simulation using local vLLM server
+├── run_batch_simulation.sh            # Older batch mode simulation
+├── generate_local_batch_dataset.sh    # Manual example for building dataset / running one stage
+├── vllm_server_init.sh                # Script to launch local vLLM server
+├── eval_test.sh                       # Extraction and evaluation pipeline
+└── find_error.sh                      # Utility to detect parsing/simulation errors
 ```
 
-- **If CUDA 11.8 needed** (rare for Spark): `pip install lmdeploy[all,cuda11]`.
-- **AMD/ROCm support**: If not Spark, add `pip install lmdeploy[all,rocm]`.
-- **Size**: ~500MB; includes engines for batching.
+### Requirements
 
-#### Step 2: Download/Prepare Model
-Clone a Hugging Face model (e.g., Llama-3-8B for testing):
+- Python 3.10+
+- PyTorch 2.x
+- vLLM (>=0.5) for efficient local inference
+- OpenAI Python client (for API runs)
+- pandas, openpyxl, numpy, scipy, scikit-learn
 
-```bash
-git lfs install
-git clone https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct /path/to/model
-```
-
-#### Step 3: Initiate the Server
-Use `lmdeploy serve api` for an OpenAI-compatible server (supports batch via `/v1/chat/completions`). For Spark, enable TurboMind backend (optimized for Blackwell; up to 1.8x vLLM throughput).
+Install dependencies (example):
 
 ```bash
-# Basic server (single GPU, TurboMind backend)
-lmdeploy serve api \
-  --model /path/to/model  # HF repo or local path
-  --backend turbomind     # For Spark/Blackwell acceleration
-  --tp 1                 # Tensor parallelism (1 for single GPU; scale to 8+ for multi-Spark)
-  --host 0.0.0.0         # Bind to network
-  --port 23333           # Default port
-  --trust-remote-code    # For HF models
-
-# Advanced (batch-optimized, multi-GPU)
-lmdeploy serve api \
-  --model meta-llama/Meta-Llama-3-8B-Instruct \
-  --backend turbomind \
-  --tp 4                 # e.g., 4 Spark GPUs
-  --quant-policy w4a16   # Optional: 4-bit quantization for speed (1.5x on Spark)
-  --host 0.0.0.0 \
-  --port 23333 \
-  --max-batch-size 128   # Batch up to 128 requests
+pip -r requirements.txt # Different backend requires specific environment, details please check vllm repository.
 ```
 
-- **Server URL**: `http://localhost:23333/v1` (OpenAI API format).
-- **Batch Inference**: Send array of `messages` (see code below). Server handles persistent batching (dynamic sizing).
-- **Spark Optimization**: TurboMind auto-detects Blackwell; use `--quant-policy w4a16` for 1.5x speed on large models.
-- **Logs**: Check `~/.lmdeploy/logs` for errors; monitor with `nvidia-smi`.
-- **Stop**: Ctrl+C; restart with same command for persistence.
+### Data Preparation
 
-#### Troubleshooting
-- **GPU Detection**: Run `lmdeploy --version` and `nvidia-smi`. Ensure Spark drivers (R550+).
-- **Memory Errors**: Use `--quant-policy w4a16` or `--tp 8` for multi-Spark.
-- **Batch Limits**: Server default max_batch_size=128; adjust with `--max-batch-size 256`.
-- **Docs**: [LMDeploy Server Guide](https://lmdeploy.readthedocs.io/en/latest/serving/server.html) (2025 updates include Blackwell support).
+Input data are pre-processed Excel files from global surveys (WVS or Pew):
 
-This setup is **production-ready** for experiments—batch throughput on Spark can hit 1000+ tokens/sec for 8B models. If you need multi-node scaling, add `--server-port 23333 --worker-port 50000`. Let me know for tweaks!**
+- One row per respondent
+- Columns for demographics (age, gender, education, etc.) and survey question responses
+
+Example placement:
+- WVS7: [data/Brazil_cleaned.xlsx](data/Brazil_cleaned.xlsx)
+- PEW 2023: [data/Brazil_opinion_200.xlsx](data/Brazil_opinion_200.xlsx)
+
+Detailed instruction in [data/README.MD](data/README.MD)
+
+### Running MINDSET
+
+#### Option 1: Local Inference with vLLM (Recommended for Reproducibility)
+
+1.Run full automated pipeline (Big Five example):
+
+Edit variables in `automate_big5_pipeline.sh` (e.g., `EXCEL_DIR`, `MODEL_PATH`).
+
+```bash
+bash automate_big5_pipeline.sh
+```
+
+- Cleans directories
+- Processes all stages sequentially as defined in `config/example_big5.yml`
+- Uses vLLM for high-throughput batch inference (batch size 1024)
+- Automatically retries failed/parsing-invalid responses
+- Extracts final answers to `results/`
+
+For MBTI theory, use `automate_mbti_pipeline.sh`.
+
+#### Option 2: Single-Country / Debug Run
+
+- With local vLLM:
+
+```bash
+bash run_e2e_simulation_local.sh
+```
+
+- With OpenAI API (e.g., gpt-4o-mini):
+
+Edit API key and model in `run_e2e_simulation.sh`, then:
+
+```bash
+bash run_e2e_simulation.sh
+```
+
+#### Option 3: Reproducing Baselines
+
+Use the provided `run_baselines*.sh` scripts (zero-shot, Durmus 2023, etc.).
+
+#### Option 4: Evaluation
+
+After generating predictions in `results/`, follow `eval_test.sh` for metric computation (1-JSD, EMD, Cohen’s κ, accuracy).
+
+### Configuration Guide (Key Files)
+
+#### config/example_big5.yml / example_mbti.yml
+
+Defines stages and theory-specific prompts/constraints. Example structure (Big Five):
+
+```yaml
+stages:
+  stress_chara:
+    prompt_path: prompts/stress_chara.txt
+    ...
+  bigfive_select: ...
+  get_traits: ...
+  assign_impact: ...
+  reason: ...
+  synthesis: ...
+  apply_constraints: ...
+```
+
+Some stages are pure Python (non-LLM), others use LLM with custom prompts.
+
+#### Pipeline Scripts (e.g., automate_big5_pipeline.sh)
+
+Key configurable variables:
+
+| Variable              | Description                                      | Example Value                  |
+|-----------------------|--------------------------------------------------|--------------------------------|
+| THEORY                | "big5" or "mbti"                                 | "big5"                         |
+| CONFIG                | Path to YAML config                              | "config/example_big5.yml"      |
+| EXCEL_DIR             | Directory with input Excel files                 | "data/WVS-big5-..."            |
+| MODEL_PATH            | Local model for vLLM                             | "cache/distill-14b"            |
+| TEMPLATE              | Prompt template (e.g., "deepseekr1")             | "deepseekr1"                   |
+| TEMPERATURE / TOP_P   | Sampling parameters                              | 0.8 / 0.7                      |
+| BATCH_SIZE            | Inference batch size                             | 1024                           |
+
+### Citation
+
+Please cite our work (bibtex available upon de-anonymization).
+
+### Contact
+
+For questions, open a GitHub issue or use conference forums during review.
