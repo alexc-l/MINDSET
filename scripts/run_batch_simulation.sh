@@ -9,7 +9,7 @@ export LLM_MODEL="cache/Apriel-1.6-15b-Thinker"
 export API_KEY="EMPTY"
 export OUTPUT_PATH="output"
 export BATCH_SIZE=32
-export ZHIPUAI_API_KEY="e6d073982c874667aaf80ff6dd01acb0.Np7TNMDFC0fpDV8W"
+export ZHIPUAI_API_KEY=""
 
 python run_batch_simulation.py \
   --data_path $DATA_PATH \

@@ -1,8 +1,8 @@
 #export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH
 export VLLM_LOGGING_LEVEL=DEBUG
-vllm serve cache/Qwen/Qwen3-8B \
+vllm serve cache/Apriel-1.6-15b-Thinker \
   --host 0.0.0.0 \
-  --port 8000 \
+  --port 8080 \
   --tensor-parallel-size 1 \
   --gpu_memory_utilization 0.85 \
   --enable-chunked-prefill  \

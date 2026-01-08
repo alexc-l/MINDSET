@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 shopt -s nullglob  # 无匹配时返回空而不是通配符本身
-export BASE_URL="https://api.laozhang.ai/v1"
+export BASE_URL=""
 export LLM_MODEL="gpt-4o-mini"
 export OUTPUT_PATH="output/$LLM_MODEL"
-export API_KEY="sk-5kb8StDLQAuqopMs306fD601015f4fA2A7A6Ee526356763b"
+export API_KEY=""
 export BASELINE="durmus_2023"
 
 extract_country() {

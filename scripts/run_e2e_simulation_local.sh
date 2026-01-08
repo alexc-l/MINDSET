@@ -10,7 +10,7 @@ export BASE_URL="http://0.0.0.0:8000/v1"
 export API_KEY="EMPTY"
 export OUTPUT_PATH="output/$LLM_MODEL"
 export CACHE_DIR="debug_cache/$LLM_MODEL/$EXP_NAME/$THEORY_NAME"
-export ZHIPUAI_API_KEY="e6d073982c874667aaf80ff6dd01acb0.Np7TNMDFC0fpDV8W"
+export ZHIPUAI_API_KEY=""
 
 python run_simulation.py \
   --data_path $DATA_PATH \
