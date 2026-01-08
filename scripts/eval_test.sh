@@ -1,5 +1,5 @@
 #Step1: Extract model predictions to excel result table.
-DATASET_JSONL="data/ablation/unrelated_theory"
+DATASET_JSONL="data/ablation/unrelated_theory" # batched input dataset
 STAGE="unrelated_theory"
 RESULTS_DIR="results/qwen3-14b/$STAGE"
 
@@ -10,7 +10,7 @@ extract_country() {
     echo "${name_without_ext#output_}"
 }
 
-for file in /Users/haijiangliu/Expansion/Projects/LLaMA-Factory-main/results/qwen3-14b/unrelated_theory/*.jsonl; do
+for file in results/qwen3-14b/unrelated_theory/*.jsonl; do # batched output folder
   [[ -f "$file" ]] || continue  # 确保是普通文件
   country=$(extract_country "$file")
   echo "$(dirname "$file")"

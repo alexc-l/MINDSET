@@ -26,6 +26,3 @@ python run_simulation.py \
   --max_questions_per_person 1 \
   --debug_mode \
   --debug_cache_dir $CACHE_DIR
-
-
-#sudo docker run -it --gpus all -p 8250:8250 -v /home/shenyan/lhj/projects/mindset:/workspace nvcr.m.daocloud.io/nvidia/vllm:25.09-py3

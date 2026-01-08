@@ -18,7 +18,7 @@ TOP_P=0.7
 MAX_NEW_TOKENS=32768
 VLLM_CONFIG='{"enforce_eager": true, "gpu_memory_utilization": 0.8}'
 BATCH_SIZE=1024
-DATASET_PREFIX="PEW-continue-qwen3-14b"
+DATASET_PREFIX="PEW-qwen3-14b"
 
 echo "Dir cleaning"
 rm -rf CACHE_DIR
