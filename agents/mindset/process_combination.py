@@ -6,8 +6,10 @@ import importlib
 import logging
 from .meta_process import MetaProcess
 from .configurable_meta_process import ConfigurableMetaProcess  # ← Import wrapper
+from ..llm_helper.constant import log_level
 
 log = logging.getLogger(__name__)
+log.setLevel(log_level)
 
 class ProcessCombination(ABC):
     """
@@ -64,7 +66,7 @@ class ProcessCombination(ABC):
             raise ValueError("No stages defined in config")
 
         # Resolve concrete combination class
-        combo_class_name = config.get("combination_class", "agents.mbti.MBTICombination")
+        combo_class_name = config.get("combination_class", "agents.MBTI.MBTICombination")
         module_path, class_name = combo_class_name.rsplit(".", 1)
         module = importlib.import_module(module_path)
         combo_class = getattr(module, class_name)

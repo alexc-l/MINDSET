@@ -9,7 +9,7 @@ def llm_call(
         prompt: str,
         system_prompt: str = "",
         temperature: float = 0.7,
-        max_tokens: int = 2048,
+        max_tokens: int = 4096,
         llm_client: LLMClient = None,
         **extra
 ) -> str:
@@ -29,7 +29,7 @@ def batch_llm_call(
         prompts: List[str],
         system_prompt: str = "",
         temperature: float = 0.7,
-        max_tokens: int = 2048,
+        max_tokens: int = 4096,
         llm_client: LLMClient = None,
         **extra
 ) -> List[str]:

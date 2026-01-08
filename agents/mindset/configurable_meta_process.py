@@ -6,9 +6,11 @@ import hashlib
 import logging
 from typing import Dict, Any
 from .meta_process import MetaProcess
+from ..llm_helper.constant import log_level
 from ..utils import parse_messy_json, parse_messy_json_with_fallback
 
 log = logging.getLogger(__name__)
+log.setLevel(log_level)
 
 class ConfigurableMetaProcess(MetaProcess):
     def __init__(self, stage_config: Dict):
@@ -25,11 +27,10 @@ class ConfigurableMetaProcess(MetaProcess):
         key = {
             "question": question if self.question_dependent else None,
             "options": options if self.question_dependent else None,
-            "personality_profile": personality_profile,
             "constraints": constraints,
             "include_metadata": include_metadata,
             "demographics": extra.get("demographics", {}),
-            "prev_output": extra.get("prev_output", {})
+            "prev_output": extra.get("prev_output", {}) if self.question_dependent else None,
         }
         # Remove None values
         key = {k: v for k, v in key.items() if v is not None}
@@ -40,7 +41,10 @@ class ConfigurableMetaProcess(MetaProcess):
         include_metadata = include_metadata if include_metadata is not None else self.include_metadata_default
         cache_dir = extra.get("cache_dir", "cache")
         interview_id = extra.get("interview_id", "unknown")
-        q_id = extra.get("q_id", "global") if not self.question_dependent else extra.get("q_id", "unknown")
+        if self.question_dependent:
+            q_id = extra.get("q_id", "unknown")
+        else:
+            q_id = "global"
 
         # === LOG: Stage Start ===
         log.info(f"[STAGE {self.name}] → START (id={interview_id}, q={q_id})")

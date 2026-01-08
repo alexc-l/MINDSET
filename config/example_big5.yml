@@ -1,6 +1,6 @@
 constraint_config:
   use_eq: true
-  use_iq: false
+  use_iq: true
   use_ses: true
 combination_class: agents.bigfive.BigFiveCombination
 stages:

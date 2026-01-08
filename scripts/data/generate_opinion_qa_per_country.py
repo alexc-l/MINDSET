@@ -56,7 +56,7 @@ def main(args):
         print(f"  {country}: {len(qs)} → {n}")
 
     # Save sampled JSON (this is now the source of truth)
-    sampled_json = Path(args.output_dir) / "sampled_200_global_opinion_qa.json"
+    sampled_json = Path(args.output_dir) / "sampled_200_global_opinion_qa_c1.json"
     sampled_json.parent.mkdir(parents=True, exist_ok=True)
     with open(sampled_json, 'w', encoding='utf-8') as f:
         json.dump(sampled_all, f, indent=2, ensure_ascii=False)

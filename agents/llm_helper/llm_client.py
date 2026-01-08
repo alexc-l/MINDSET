@@ -4,6 +4,7 @@ import requests
 import torch
 
 from agents.llm_helper.chat_templates import apply_chat_template
+from agents.llm_helper.constant import log_level
 
 try:
     from openai import OpenAI
@@ -43,7 +44,7 @@ except ImportError:
     hf_pipeline = None
 
 log = logging.getLogger(__name__)
-
+log.setLevel(log_level)
 import logging
 
 class LLMClient:
@@ -110,7 +111,7 @@ class LLMClient:
                 )
             log.info("LMDeploy local pipeline initialized")
 
-        if self.provider == 'vllm':
+        elif self.provider == 'vllm':
             if LLM is None:
                 raise ImportError("Install vLLM: pip install vllm")
             if self.base_url:
@@ -170,7 +171,6 @@ class LLMClient:
         **extra
     ) -> str:
         """Single chat completion call."""
-        prompt = self._format_prompt(messages)
 
         if self.provider == 'openai':
             resp = self.client.chat.completions.create(
@@ -182,7 +182,7 @@ class LLMClient:
             )
             return resp.choices[0].message.content
 
-        elif self.provider == 'anthropic':
+        if self.provider == 'anthropic':
             # Anthropic uses 'system' separate; adjust messages
             system = next((m['content'] for m in messages if m['role'] == 'system'), None)
             user_messages = [m for m in messages if m['role'] != 'system']
@@ -196,14 +196,14 @@ class LLMClient:
             )
             return resp.content[0].text
 
-        elif self.provider == 'google':
+        if self.provider == 'google':
             # Simplified: Concat messages into content
             content = '\n'.join([f"{m['role']}: {m['content']}" for m in messages])
             config = genai.GenerationConfig(temperature=temperature, max_output_tokens=max_tokens)
             resp = self.client.generate_content(content, generation_config=config, **extra)
             return resp.text
 
-        elif self.provider == 'zhipuai':
+        if self.provider == 'zhipuai':
             resp = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
@@ -251,6 +251,7 @@ class LLMClient:
                 return outputs[0].outputs[0].text
 
         if self.provider == 'huggingface':
+            prompt = self._format_prompt(messages)
             outputs = self.client(
                 prompt,
                 max_new_tokens=max_tokens,
@@ -263,6 +264,7 @@ class LLMClient:
             return generated
 
         if self.provider == 'ollama':
+            prompt = self._format_prompt(messages)
             payload = {
                 "model": self.model,
                 "prompt": prompt,

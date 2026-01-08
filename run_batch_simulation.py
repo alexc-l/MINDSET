@@ -31,7 +31,7 @@ PURE_PYTHON_STAGES = ("get_stack", "get_traits")
 
 # Stages that run once per human (not per question)
 PERSON_INDEPENDENT_STAGES = {
-    "mbti": ["stress_chara", "mbti_select", "get_stack"],
+    "MBTI": ["stress_chara", "mbti_select", "get_stack"],
     "bigfive": ["stress_chara", "bigfive_select", "get_traits"]
 }
 
@@ -39,7 +39,7 @@ def args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, required=True, help='Path to the data file')
     parser.add_argument('--exp_name', type=str, required=True, help='Experiment name')
-    parser.add_argument('--theory_name', type=str, default="mbti", required=True, help='Personality cognitive theory')
+    parser.add_argument('--theory_name', type=str, default="MBTI", required=True, help='Personality cognitive theory')
     parser.add_argument('--config_path', type=str, default="config/example_mbti.yml", help='Path to the config file')
     parser.add_argument('--llm_provider', type=str, default='zhipuai', help='LLM provider')
     parser.add_argument('--llm_model', type=str, default='glm-4-flash', help='LLM model')
@@ -106,12 +106,12 @@ def run_batch_simulation(arguments):
 
     # Load data
     human_chara = pd.read_excel(data_path, sheet_name='Human_chara', header=0).iloc[1:]
-    qa_pair = pd.read_excel(data_path, sheet_name='QA_pair', header=0)
+    qa_pair = pd.read_excel(data_path, sheet_name='QA_pairs', header=0)
     q_ids = qa_pair.columns[2:].tolist()
     questions = {q_id: qa_pair[q_id].iloc[0] for q_id in q_ids}
 
     # Init theory
-    TheoryClass = MBTITheory if theory_name == "mbti" else BigFiveTheory
+    TheoryClass = MBTITheory if theory_name == "MBTI" else BigFiveTheory
     theory_obj = TheoryClass()
 
     # Init pipeline
@@ -134,8 +134,8 @@ def run_batch_simulation(arguments):
         is_independent = stage_name in indep_stages
 
         for _, row in human_chara.iterrows():
-            interview_id = str(row["D_INTERVIEW"])
-            cluster = row["cluster"]
+            interview_id = str(row["Interview ID"])
+            country = row["Interview Country"]
             demographics = row.to_dict()
             profile = theory_obj.predict_from_demographics(demographics)
 
@@ -176,7 +176,7 @@ def run_batch_simulation(arguments):
                     batch_prompts.append(prompt)
                     custom_id = f"{int(interview_id):04d}-{stage_name}"
                     batch_metadata.append({
-                        "cluster": cluster,
+                        "country": country,
                         "interview_id": interview_id,
                         "stage": stage_name,
                         "custom_id": custom_id,
@@ -221,7 +221,7 @@ def run_batch_simulation(arguments):
 
                     batch_prompts.append(prompt)
                     batch_metadata.append({
-                        "cluster": cluster,
+                        "country": country,
                         "interview_id": interview_id,
                         "q_id": q_id,
                         "stage": stage_name,
@@ -264,15 +264,15 @@ def run_batch_simulation(arguments):
 
             if stage_name == "synthesis":
                 simulated.append({
-                    'cluster': meta["cluster"],
+                    'country': meta["country"],
                     'interview_id': meta["interview_id"],
                     'question_id': meta["q_id"],
                     'simulated_answer': parsed_result
                 })
 
     # Final save
-    out_file = os.path.join(full_output_path, "simulated.csv")
-    pd.DataFrame(simulated).to_csv(out_file, index=False)
+    exp_name = f"{theory_name}-{exp_name}.csv"
+    pd.DataFrame(simulated).to_csv(os.path.join(output_path, exp_name, index=False))
     log.info(f"Completed in {datetime.now() - start_time}")
 
 if __name__ == "__main__":

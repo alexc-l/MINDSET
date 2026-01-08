@@ -8,6 +8,7 @@ from typing import Dict, Any, List
 import yaml
 
 from .constants import PROCESS_DESC_LOOKUP
+from .llm_helper.constant import log_level
 from .mindset.meta_process import MetaProcess
 from .mindset.personality_theory import PersonalityTheory
 from .mindset.process_combination import ProcessCombination
@@ -15,7 +16,7 @@ from .mindset.process_combination import ProcessCombination
 from .utils import load_prompt
 from .llm_helper._llm_stub import llm_call  # For convenience
 log = logging.getLogger(__name__)
-
+log.setLevel(log_level)
 
 class MBTISelectMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any],
@@ -62,7 +63,7 @@ class GetStackMetaProcess(MetaProcess):
     def execute(self, question: str, options: str, personality_profile: Dict[str, Any], constraints: Dict[str, Any],
                 include_metadata: bool = False, **extra) -> (str, str):
         prev_output_dict = json.loads(extra.get("prev_output", "{}"))
-        mbti_type = prev_output_dict.get('mbti', '')
+        mbti_type = prev_output_dict.get('MBTI', '')
         if not mbti_type:
             raise ValueError("MBTI type not available")
         stack = self._STACKS.get(mbti_type.upper(), {})
@@ -81,6 +82,7 @@ class AssignImpactMetaProcess(MetaProcess):
             .replace("{chara_summary}", chara_summary)
             .replace("{stress_level}", stress_level)
             .replace("{stack}", stack)
+            .replace("{question}", question)
         )
 
         if "batch_size" in extra.keys():
@@ -182,11 +184,11 @@ class MBTICombination(ProcessCombination):
             elif stage_name == "mbti_select":
                 try:
                     data = json.loads(output)
-                    mbti = data.get("mbti")
+                    mbti = data.get("MBTI")
                     if mbti:
-                        state["mbti"] = mbti
-                        personality_profile["mbti"] = mbti
-                        log.debug(f"[CAPTURE] mbti_select → mbti={mbti}")
+                        state["MBTI"] = mbti
+                        personality_profile["MBTI"] = mbti
+                        log.debug(f"[CAPTURE] mbti_select → MBTI={mbti}")
                 except json.JSONDecodeError:
                     log.warning(f"[CAPTURE] Failed to parse mbti_select output")
 

@@ -1,8 +1,8 @@
 constraint_config:
   use_eq: true
-  use_iq: false
+  use_iq: true
   use_ses: true
-combination_class: agents.mbti.MBTICombination
+combination_class: agents.MBTI.MBTICombination
 stages:
   - name: stress_chara
     class: agents.mindset.socio_demo_generator.StressCharaMetaProcess
@@ -18,45 +18,45 @@ stages:
         ses: socio_demo_profile/snippets/ses_snippet
 
   - name: mbti_select
-    class: agents.mbti.MBTISelectMetaProcess
+    class: agents.MBTI.MBTISelectMetaProcess
     cache_enabled: true
     question_dependent: false   # Depends only on person, not question
-    include_metadata: true
+    include_metadata: false
     prompt_paths:
-      default: mbti/mbti_select_prompt
-      metadata: mbti/mbti_select_prompt_metadata
+      default: MBTI/mbti_select_prompt
+      metadata: MBTI/mbti_select_prompt_metadata
 
   - name: get_stack
-    class: agents.mbti.GetStackMetaProcess
+    class: agents.MBTI.GetStackMetaProcess
     cache_enabled: false
     question_dependent: false
 
   - name: assign_impact
-    class: agents.mbti.AssignImpactMetaProcess
+    class: agents.MBTI.AssignImpactMetaProcess
     cache_enabled: true
     question_dependent: true
     include_metadata: false
     prompt_paths:
-      default: mbti/assign_impact_prompt
-      metadata: mbti/assign_impact_prompt_metadata
+      default: MBTI/assign_impact_prompt
+      metadata: MBTI/assign_impact_prompt_metadata
 
   - name: reason
-    class: agents.mbti.ReasonMetaProcess
+    class: agents.MBTI.ReasonMetaProcess
     cache_enabled: true
     question_dependent: true
     include_metadata: false
     prompt_paths:
-      default: mbti/reason_prompt
-      metadata: mbti/reason_prompt_metadata
+      default: MBTI/reason_prompt
+      metadata: MBTI/reason_prompt_metadata
 
   - name: synthesis
-    class: agents.mbti.SynthesisMetaProcess
+    class: agents.MBTI.SynthesisMetaProcess
     cache_enabled: true
     question_dependent: true
     include_metadata: false
     prompt_paths:
-      default: mbti/preference_synthesis_prompt
-      metadata: mbti/preference_synthesis_prompt_metadata
+      default: MBTI/preference_synthesis_prompt
+      metadata: MBTI/preference_synthesis_prompt_metadata
 
   - name: apply_constraints
     class: agents.mindset.constraints.ConstraintMetaProcess

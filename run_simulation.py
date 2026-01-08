@@ -7,6 +7,10 @@ import json
 import logging
 from datetime import datetime
 from typing import Dict, Any
+
+from tqdm import tqdm
+
+from agents.llm_helper.constant import log_level
 from agents.mbti import MBTITheory
 from agents.bigfive import BigFiveTheory
 from agents.llm_helper.llm_client import LLMClient
@@ -14,7 +18,7 @@ from agents.mindset.process_combination import ProcessCombination
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=log_level,
     format='%(asctime)s | %(levelname)-8s | %(message)s',
     datefmt='%H:%M:%S'
 )
@@ -34,7 +38,7 @@ def args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, required=True, help='Path to the data file')
     parser.add_argument('--exp_name', type=str, required=True, help='Experiment name')
-    parser.add_argument('--theory_name', type=str, default="mbti", required=True, help='Personalty cogntive theory')
+    parser.add_argument('--theory_name', type=str, default="MBTI", required=True, help='Personalty cogntive theory')
     parser.add_argument('--config_path', type=str, default="config/example_mbti.yml", help='Path to the config file')
     parser.add_argument('--llm_provider', type=str, default='openai', help='LLM provider')
     parser.add_argument('--llm_model', type=str, default='gpt-4o', help='LLM model')
@@ -99,11 +103,11 @@ def run_simulation(
         # Load data
         log.info("Loading Excel data...")
         human_chara = pd.read_excel(data_path, sheet_name='Human_chara', header=1)
-        qa_pair = pd.read_excel(data_path, sheet_name='QA_pair', header=0)
+        qa_pair = pd.read_excel(data_path, sheet_name='QA_pairs', header=0)
         log.info(f"Loaded {len(human_chara)} human profiles, {len(qa_pair.columns)-2} questions")
 
         # Extract questions
-        q_ids = qa_pair.columns[2:].tolist()  # Skip cluster, D_INTERVIEW
+        q_ids = qa_pair.columns[2:].tolist()  # Skip country, D_INTERVIEW
         questions = {}
         for q_id in q_ids:
             q_text = qa_pair[q_id].iloc[0]  # Definition row
@@ -121,7 +125,7 @@ def run_simulation(
         log.info("LLM client initialized")
 
         # Initialize theory
-        if theory_name.lower() == "mbti":
+        if theory_name.lower() == "MBTI":
             theory = MBTITheory()
         elif theory_name .lower() == "bigfive":
             theory = BigFiveTheory()
@@ -132,13 +136,14 @@ def run_simulation(
         simulated = []
         person_counter = 0
 
-        for idx, row in human_data.iterrows():
+        # for idx, row in human_data.iterrows():
+        for _, row in tqdm(human_chara.iterrows(), total=len(human_chara), desc="Subjects"):
             person_counter += 1
-            interview_id = row['D_INTERVIEW']
-            cluster = row['cluster']
+            interview_id = row['Interview ID']
+            country = row['Interview Country']
             demographics = row.to_dict()
 
-            log.info(f"[{person_counter}/{total_persons}] Processing ID={interview_id}, Cluster={cluster}")
+            log.info(f"[{person_counter}/{total_persons}] Processing ID={interview_id}, Country={country}")
 
             # Predict rule-based profile
             profile = theory.predict_from_demographics(demographics)
@@ -151,7 +156,8 @@ def run_simulation(
             constraints = {}
 
             q_counter = 0
-            for q_id, q_text in questions.items():
+            question_tqdm = tqdm(questions.items(), desc=f"Questions for ID={interview_id}", leave=False)
+            for q_id, q_text in question_tqdm:
                 q_counter += 1
                 if max_questions_per_person and q_counter > max_questions_per_person:
                     log.debug(f"  Skipping remaining questions for ID={interview_id} (limit reached)")
@@ -183,7 +189,7 @@ def run_simulation(
                         final_answer = answer_json.strip()
 
                     simulated.append({
-                        'cluster': cluster,
+                        'country': country,
                         'interview_id': interview_id,
                         'question_id': q_id,
                         'simulated_answer': final_answer
@@ -193,7 +199,7 @@ def run_simulation(
                 except Exception as e:
                     log.error(f"    Failed Q{q_id} for ID={interview_id}: {e}")
                     simulated.append({
-                        'cluster': cluster,
+                        'country': country,
                         'interview_id': interview_id,
                         'question_id': q_id,
                         'simulated_answer': f"ERROR: {str(e)[:100]}"
@@ -203,7 +209,7 @@ def run_simulation(
         result_df = pd.DataFrame(simulated)
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-        exp_name = f"{theory_name}-{exp_name}"
+        exp_name = f"{theory_name}-{exp_name}.csv"
         result_df.to_csv(os.path.join(output_path, exp_name), index=False, mode='w+')
         total_responses = len(result_df)
 

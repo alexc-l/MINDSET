@@ -1,6 +1,8 @@
 # agents/bigfive.py
 import json
 from typing import Dict, Any, List
+
+from .llm_helper.constant import log_level
 from .mindset.meta_process import MetaProcess
 from .mindset.process_combination import ProcessCombination
 from .mindset.personality_theory import PersonalityTheory
@@ -12,6 +14,7 @@ import hashlib
 import logging
 
 log = logging.getLogger(__name__)
+log.setLevel(log_level)
 
 class BigFiveSelectMetaProcess(MetaProcess):
     """Selects Big Five trait levels based on demo, profile, rules (LLM)."""
@@ -103,8 +106,10 @@ class ReasonMetaProcess(MetaProcess):
                 # Medium never goes into "grip" — force adaptive mode
                 final_desc = "Shows balanced, moderate expression of this trait with no strong bias."
             else:
-                lookup_key = f"{trait_name} ({level})"
+                lookup_key = f"{trait_name}"
+                # print(lookup_key)
                 desc_entry = BIGFIVE_DESC_LOOKUP.get(lookup_key)  # falls back gracefully
+                # print(BIGFIVE_DESC_LOOKUP.keys())
                 if impact == "negative":
                     final_desc = desc_entry.get("Stressed_desc", desc_entry["Description"])
                 else:
@@ -185,8 +190,6 @@ class BigFiveCombination(ProcessCombination):
                         level = trait_dict.get("level", "medium")
                         trait_dict["level"] = level
                     state['prev_output'] = json.dumps(output_dict)
-                    print(output_dict)
-                    print(state['prev_output'])
                 except json.JSONDecodeError:
                     pass
 
