@@ -1,4 +1,4 @@
-# MINDSET: Personality-Theory-Guided Zero-Shot Reasoning for Faithful Simulation of Human Values
+# MINDSET: A Personality-Informed and Socially Grounded Reasoning Approach to Simulate Global Values
 ![](docs/pipeline.png)
 ## Code Repository
 
